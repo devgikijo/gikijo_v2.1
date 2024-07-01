@@ -1,0 +1,42 @@
+# ignore test data
+/pages/api/test/
+
+# Ignore dependencies and build artifacts
+/node_modules/
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# Ignore testing and coverage reports
+/coverage
+
+# Ignore Next.js build directories
+/.next/
+/out/
+
+# Ignore production build directory
+/build
+
+# Ignore macOS file system metadata
+.DS_Store
+
+# Ignore SSL certificates
+*.pem
+
+# Ignore debugging logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignore local environment files
+.env*.local
+
+# Ignore Vercel configuration
+.vercel
+
+# Ignore TypeScript build information
+*.tsbuildinfo
+next-env.d.ts
+
+# Ignore Sentry configuration file
+.sentryclirc
