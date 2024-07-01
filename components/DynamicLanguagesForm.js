@@ -51,7 +51,7 @@ function DynamicLanguagesForm({ arrayElements, setArrayElements }) {
               className="form-control"
               value={arrayElements.languages[index].name}
               onChange={(e) => handleInputChange('name', index, e)}
-              placeholder="Skill Name"
+              placeholder="Language Name"
               required
             />
           </div>

@@ -71,10 +71,9 @@ const main = () => {
   };
 
   const profileCondition = () => {
-    const { profile, companyProfile, resume } = apiData;
-    const { uid, type } = router.query;
+    if (apiData.user.isLoading == false) {
+      const { uid, type } = router.query;
 
-    if (!profile.isLoading && !companyProfile.isLoading && !resume.isLoading) {
       if (uid && type) {
         if (type === 'resume') {
           getResumeDetails(uid);
@@ -89,29 +88,39 @@ const main = () => {
             },
           }));
         }
-      } else if (
-        profile.data?.account_type &&
-        apiData.profile.data?.onboarding == true
-      ) {
-        const accountType = profile.data.account_type;
-        if (accountType === 'job_seeker') {
-          getResumeDetails(resume.data?.uid);
-        } else if (accountType === 'employer') {
-          getCompanyDetails(companyProfile.data?.uid);
-        }
       } else {
-        router.push(PAGES.onboard.directory);
+        const { profile, companyProfile, resume } = apiData;
+
+        if (profile.data?.account_type && profile.data?.onboarding == true) {
+          const accountType = profile.data.account_type;
+
+          if (accountType === 'job_seeker' && resume.data?.uid) {
+            getResumeDetails(resume.data.uid);
+          } else if (accountType === 'employer' && companyProfile.data?.uid) {
+            getCompanyDetails(companyProfile.data.uid);
+          }
+        } else if (profile.data?.onboarding == false) {
+          router.push(PAGES.onboard.directory);
+        }
       }
     }
   };
 
   useEffect(() => {
-    profileCondition();
+    if (
+      router.query &&
+      !apiData.user.isLoading &&
+      !apiData.profile.isLoading &&
+      !apiData.resume.isLoading &&
+      !apiData.companyProfile.isLoading
+    )
+      profileCondition();
   }, [
-    apiData.profile.isLoading,
-    apiData.companyProfile.isLoading,
-    apiData.resume.isLoading,
     router.query,
+    apiData.user.isLoading,
+    apiData.profile.isLoading,
+    apiData.resume.isLoading,
+    apiData.companyProfile.isLoading,
   ]);
 
   const viewConfig = {

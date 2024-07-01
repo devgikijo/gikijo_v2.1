@@ -52,7 +52,7 @@ export const PAGES = {
     key: 'dashboard',
     name: 'Dashboard',
     directory: '/dashboard',
-    description: `Welcome to your dashboard.`,
+    description: `Welcome to your dashboard. Here is the latest summary.`,
     isAuth: true,
   },
   job_post: {
@@ -66,14 +66,14 @@ export const PAGES = {
     key: 'applicants',
     name: 'Applicants',
     directory: '/applicants',
-    description: 'Create and publish your job oppurtunities here.',
+    description: 'View and manage the applicants for your job posting here.',
     isAuth: true,
   },
   application: {
     key: 'application',
     name: 'Application',
     directory: '/application',
-    description: 'Create and publish your job oppurtunities here.',
+    description: 'Jobs you have applied to will be displayed here.',
     isAuth: true,
   },
   manage_profile: {
@@ -108,7 +108,7 @@ export const PAGES = {
     key: 'settings',
     name: 'Settings',
     directory: '/settings',
-    description: 'Create and publish your job oppurtunities here.',
+    description: 'Manage your account settings here.',
     isAuth: true,
   },
   profile: {
@@ -124,6 +124,27 @@ export const PAGES = {
     directory: '/admin',
     description: 'Create and publish your job oppurtunities here.',
     isAuth: true,
+  },
+  terms_conditions: {
+    key: 'terms_conditions',
+    name: 'Terms and conditions',
+    directory: '/termsConditions',
+    description: 'Create and publish your job oppurtunities here.',
+    isAuth: false,
+  },
+  job_details_old: {
+    key: 'job_details_old',
+    name: 'Job Details',
+    directory: '/job-details',
+    description: 'Create and publish your job oppurtunities here.',
+    isAuth: false,
+  },
+  maintenance: {
+    key: 'maintenance',
+    name: 'Maintenance',
+    directory: '/maintenance',
+    description: '',
+    isAuth: false,
   },
 };
 
@@ -187,6 +208,7 @@ export const INDUSTRIES = [
   { name: 'Human Resources ', value: 'human_resources' },
   { name: 'Staffing', value: 'staffing' },
   { name: 'Information Technology', value: 'information_technology' },
+  { name: 'Services', value: 'services' },
   { name: 'Insurance', value: 'insurance' },
   { name: 'Legal Services ', value: 'legal_services' },
   { name: 'Manufacturing ', value: 'manufacturing' },
@@ -291,8 +313,8 @@ export const SKILL_LEVELS = [
 
 export const LANGUAGE_LEVELS = [
   {
-    name: 'Elementary',
-    value: 'elementary',
+    name: 'Beginner',
+    value: 'beginner',
     description:
       'Basic understanding of the language, limited vocabulary and simple phrases.',
   },

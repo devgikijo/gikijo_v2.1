@@ -31,7 +31,6 @@ const CompanyProfileForm = ({ section = null, onSuccessFunction = null }) => {
     postcode: '',
     state: '',
     country: '',
-    agree_to_term: '',
     about_us: '',
     size: '',
   });
@@ -103,7 +102,6 @@ const CompanyProfileForm = ({ section = null, onSuccessFunction = null }) => {
         postcode: formValue.postcode,
         state: formValue.state,
         country: formValue.country,
-        agree_to_term: formValue.agree_to_term,
       },
       formView: (
         <>
@@ -135,11 +133,12 @@ const CompanyProfileForm = ({ section = null, onSuccessFunction = null }) => {
                 id="input-registration-number"
                 value={formValue.registration_number}
                 onChange={handleChange('registration_number')}
+                required
               />
             </div>
             <div class="col mb-3">
               <label htmlFor="input-website" class="form-label">
-                Website URL
+                Website URL <small class="text-muted">(optional)</small>
               </label>
               <input
                 type="text"
@@ -223,25 +222,6 @@ const CompanyProfileForm = ({ section = null, onSuccessFunction = null }) => {
                   })}
                 </select>
               </div>
-            </div>
-            <div class="mb-3 form-check">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="input-agree-to-term"
-                checked={formValue.agree_to_term}
-                onChange={handleChange('agree_to_term')}
-                required
-              />
-              <label
-                class="form-check-label text-muted"
-                htmlFor="input-agree-to-term"
-              >
-                <small>
-                  I confirm that I have read and agreed to the terms and
-                  conditions.
-                </small>
-              </label>
             </div>
             <div class="d-flex justify-content-end">
               <GlobalButton

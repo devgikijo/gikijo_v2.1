@@ -12,17 +12,13 @@ import GlobalButton from '../components/GlobalButton';
 import JobFilter from '../components/JobFilter';
 import JobTypeBadge from '../components/JobTypeBadge';
 import { useModal } from '../context/modal';
+import Image from 'next/image';
 
 const Index = () => {
   const { apiData } = useApiCall();
   const { isModalOpen, toggleModal } = useModal();
   const router = useRouter();
-
-  useEffect(() => {
-    setTimeout(() => {
-      toggleModal('news');
-    }, 500);
-  }, []);
+  const logedIn = apiData.user.data?.id && !apiData.user.isLoading;
 
   const mainAccessConfig = {
     cardOne: {
@@ -31,15 +27,41 @@ const Index = () => {
         router.push(PAGES.jobs.directory);
       },
       description: 'Explore and Apply for Jobs.',
-      icon: <i class="bi bi-search-heart h1 text-primary"></i>,
+      // icon: <i class="bi bi-search-heart h1 text-primary"></i>,
+      icon: (
+        <Image
+          src="/images/search-12.svg"
+          alt="image"
+          width={0}
+          height={0}
+          sizes="100vw"
+          style={{ width: 70, height: 70 }}
+          class="d-inline-block align-text-top"
+        />
+      ),
     },
     cardTwo: {
       title: 'Post Job',
       onClick: () => {
-        router.push(PAGES.postJob.directory);
+        if (logedIn) {
+          router.push(PAGES.job_post.directory);
+        } else {
+          toggleModal('auth');
+        }
       },
       description: 'Publish and Share Job Posts.',
-      icon: <i class="bi bi-megaphone h1 text-primary"></i>,
+      // icon: <i class="bi bi-megaphone h1 text-primary"></i>,
+      icon: (
+        <Image
+          src="/images/marketing-12.svg"
+          alt="image"
+          width={0}
+          height={0}
+          sizes="100vw"
+          style={{ width: 70, height: 70 }}
+          class="d-inline-block align-text-top"
+        />
+      ),
     },
   };
 
@@ -52,18 +74,18 @@ const Index = () => {
             showFilter={false}
             navigateToJobs={true}
           />
-          <div class="row row-cols-1 row-cols-md-2 g-4">
+          <div class="row row-cols-1 row-cols-md-2 g-4 pt-3">
             {Object.values(mainAccessConfig).map((config, index) => (
               <div class="col" onClick={config.onClick} key={index}>
-                <div class="card card-move hover-click" id="find-job-btn">
+                <div class="card card-move hover-border" id="find-job-btn">
                   <div class="card-body row">
                     <div class="col-8">
-                      <h5
+                      <h4
                         class="card-title font-weight-bold"
                         data-lang-key="global.find_job"
                       >
                         {config.title}
-                      </h5>
+                      </h4>
                       <p
                         class="card-text"
                         data-lang-key="index.explore_and_xxx"
@@ -78,9 +100,9 @@ const Index = () => {
             ))}
           </div>
           <JobTypeBadge />
-          <h5 data-lang-key="global.latest_job">Latest Jobs</h5>
+          <h5>Latest Jobs</h5>
           <JobDeckCard />
-          <h5 data-lang-key="global.latest_companies">Latest Companies</h5>
+          <h5>Latest Companies</h5>
           <CompanyDeckCard
             isLoading={apiData.topCompanyProfile?.isLoading}
             isEmpty={

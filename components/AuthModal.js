@@ -309,7 +309,15 @@ const AuthModal = ({ show, setShow }) => {
                   <small>
                     By clicking on the "{PAGES.signup.name}" or "Continue with
                     Google" button, you are acknowledging and accepting our{' '}
-                    <Link href="terms">Terms and Conditions.</Link>
+                    <span
+                      class="text-primary clickable"
+                      onClick={() => {
+                        toggleModal('auth');
+                        router.push(PAGES.terms_conditions.directory);
+                      }}
+                    >
+                      Terms and Conditions.
+                    </span>
                   </small>
                 </p>
               </form>

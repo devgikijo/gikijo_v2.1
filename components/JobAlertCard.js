@@ -2,6 +2,7 @@ import { useState } from 'react';
 import GlobalButton from './GlobalButton';
 import { useApiCall } from '../context/apiCall';
 import toast from 'react-hot-toast';
+import { EMPLOYMENT_TYPES } from '../utils/constants';
 
 function JobAlertCard() {
   const { addJobAlertApi } = useApiCall();
@@ -25,6 +26,7 @@ function JobAlertCard() {
     const result = await addJobAlertApi({
       name: document.getElementById('input-name').value,
       email: document.getElementById('input-email').value,
+      employment_type: document.getElementById('select-job-type').value,
     });
 
     if (result) {
@@ -52,7 +54,7 @@ function JobAlertCard() {
         <form onSubmit={onSubmitJobAlert} class="mt-3">
           <div class="mb-3">
             <label htmlFor="input-name" class="form-label">
-              Username
+              Name
             </label>
             <input type="text" class="form-control" id="input-name" required />
           </div>
@@ -66,6 +68,23 @@ function JobAlertCard() {
               id="input-email"
               required
             />
+          </div>
+          <div class="mb-4">
+            <label htmlFor="select-job-type" class="form-label">
+              Type
+            </label>
+            <select class="form-select" id="select-job-type" required>
+              <option value="" disabled>
+                Please select
+              </option>
+              {EMPLOYMENT_TYPES.map((item, index) => {
+                return (
+                  <option value={item.value} key={index}>
+                    {item.name}
+                  </option>
+                );
+              })}
+            </select>
           </div>
           <div>
             <GlobalButton

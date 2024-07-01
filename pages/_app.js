@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import NavBar from '../components/NavBar';
 import Footer from '../components/Footer';
-import { ModalProvider } from '../context/modal';
+import { ModalProvider, useModal } from '../context/modal';
 import AuthModal from '../components/AuthModal';
 import { ApiCallProvider } from '../context/apiCall';
 import ForgotPasswordModal from '../components/ForgotPasswordModal';

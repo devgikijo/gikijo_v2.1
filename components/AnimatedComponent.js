@@ -13,7 +13,7 @@ function AnimatedComponent({
         opacity: 1,
         y: 0,
         transition: {
-          duration: animateByIndex ? 0.4 + stageIndex : 0.4,
+          duration: animateByIndex ? 0.4 + (stageIndex % 5) : 0.4, // to ensure the value remains within the range of 0 to 4.
           type: 'spring',
         },
       },
@@ -37,6 +37,18 @@ function AnimatedComponent({
         transition: {
           duration: animateByIndex ? 0.4 + stageIndex : 0.4,
           type: 'spring',
+        },
+      },
+    },
+    hideDown: {
+      hidden: { opacity: 1, y: 0 },
+      show: {
+        opacity: 0,
+        y: 20,
+        transition: {
+          duration: animateByIndex ? 0.4 + stageIndex : 0.4,
+          type: 'spring',
+          delay: 0.2, // Add a delay to ensure the animation starts after the other animations
         },
       },
     },

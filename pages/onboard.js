@@ -14,10 +14,18 @@ import CompanyProfileTable from '../components/CompanyProfileTable';
 import CompanyProfileForm from '../components/CompanyProfileForm';
 import { useTempData } from '../context/tempData';
 import JobPostModal from '../components/JobPostModal';
+import Image from 'next/image';
+import JobCard from '../components/JobCard';
+import JobFilter from '../components/JobFilter';
 
 const main = () => {
-  const { apiData, updateAccountTypeApi, addResumeApi, updateOnboardingApi } =
-    useApiCall();
+  const {
+    apiData,
+    updateAccountTypeApi,
+    addResumeApi,
+    updateOnboardingApi,
+    addNotificationApi,
+  } = useApiCall();
   const { isModalOpen, toggleModal } = useModal();
   const { tempData, setValueTempData } = useTempData();
   const router = useRouter();
@@ -38,23 +46,37 @@ const main = () => {
     employer: {
       title: 'I want to find a job',
       onClick: async () => {
-        const result = await updateAccountTypeApi({
-          postData: {
-            accountType: 'job_seeker',
-          },
-        });
+        try {
+          const result = await updateAccountTypeApi({
+            postData: {
+              accountType: 'job_seeker',
+            },
+          });
 
-        const resultResume = await addResumeApi({
-          postData: {
-            uid: apiData.resume.data?.uid ?? null,
-          },
-        });
+          const resultResume = await addResumeApi({
+            postData: {
+              uid: apiData.resume.data?.uid ?? null,
+            },
+          });
 
-        if (result) {
-          setStep('createResume');
+          if (result && resultResume) {
+            setStep('createResume');
+          }
+        } catch (error) {
+          console.error('Error:', error);
         }
       },
-      icon: <i class="bi bi-search-heart h1 text-primary"></i>,
+      icon: (
+        <Image
+          src="/images/search-12.svg"
+          alt="image"
+          width={0}
+          height={0}
+          sizes="100vw"
+          style={{ width: 70, height: 70 }}
+          class="d-inline-block align-text-top"
+        />
+      ),
     },
     jobSeeker: {
       title: 'I want to post a job',
@@ -69,7 +91,17 @@ const main = () => {
           setStep('createCompanyProfile');
         }
       },
-      icon: <i class="bi bi-megaphone h1 text-primary"></i>,
+      icon: (
+        <Image
+          src="/images/marketing-12.svg"
+          alt="image"
+          width={0}
+          height={0}
+          sizes="100vw"
+          style={{ width: 70, height: 70 }}
+          class="d-inline-block align-text-top"
+        />
+      ),
     },
   };
 
@@ -120,7 +152,7 @@ const main = () => {
       </motion.p>
       <motion.div
         variants={STAGGER_CHILD_VARIANTS}
-        class="lead text-muted text-start"
+        class="text-muted text-start"
       >
         {customBody ? (
           customBody
@@ -220,21 +252,25 @@ const main = () => {
         <SectionView
           type="employer"
           title="Create Your Job Post"
-          subtitle="Let's Design Your Job Opportunity"
+          subtitle="Let's Design Your First Job Post"
           customBody={
             <>
-              <JobPostTable />
+              <div>
+                <JobPostTable />
+              </div>
               <div class="text-center">
                 {!apiData.jobPost.isLoading &&
                 apiData.jobPost.data.length == 0 ? (
-                  <span
+                  <>
+                    {/* <span
                     class="text-primary clickable"
                     onClick={() => {
                       setStep('completedEmployer');
                     }}
                   >
                     Skip
-                  </span>
+                  </span> */}
+                  </>
                 ) : (
                   <>
                     <GlobalButton
@@ -279,7 +315,15 @@ const main = () => {
           customBody={
             <div class="text-center">
               <motion.h1 variants={STAGGER_CHILD_VARIANTS} class="mt-4">
-                🎉
+                <Image
+                  src="/images/approval-5.svg"
+                  alt="image"
+                  width={0}
+                  height={0}
+                  sizes="100vw"
+                  style={{ width: 150, height: 'auto' }}
+                  class="d-inline-block align-text-top"
+                />
               </motion.h1>
               <motion.div variants={STAGGER_CHILD_VARIANTS} class="mt-4">
                 <GlobalButton
@@ -293,11 +337,15 @@ const main = () => {
                     });
 
                     if (result) {
+                      await addNotificationApi({
+                        message: 'Welcome to your dashboard! 🎉',
+                        message_detail: `We're excited to have you with us. Take some time to look around and get familiar with everything here!`,
+                      });
                       router.push(PAGES.profile.directory);
                     }
                   }}
                 >
-                  Company Profile <i class="bi bi-arrow-right-short"></i>
+                  View Company Profile <i class="bi bi-arrow-right-short"></i>
                 </GlobalButton>
               </motion.div>
             </div>
@@ -392,23 +440,20 @@ const main = () => {
           title="Get Going!"
           subtitle="Start Applying or Check Your Profile"
           customBody={
-            <div class="text-center">
-              <motion.div
-                variants={STAGGER_CHILD_VARIANTS}
-                class="lead text-muted text-start"
-              >
-                <JobDeckCard />
-              </motion.div>
+            <div>
               <motion.div variants={STAGGER_CHILD_VARIANTS}>
-                <GlobalButton
-                  btnType="button"
-                  btnClass="btn btn-outline-primary btn-lg"
-                  btnOnClick={() => {
-                    setStep('completedJobSeeker');
-                  }}
-                >
-                  Continue <i class="bi bi-arrow-right-short"></i>
-                </GlobalButton>
+                <JobDeckCard />
+                <div class="text-center">
+                  <GlobalButton
+                    btnType="button"
+                    btnClass="btn btn-primary btn-lg"
+                    btnOnClick={() => {
+                      setStep('completedJobSeeker');
+                    }}
+                  >
+                    Skip for now <i class="bi bi-arrow-right-short"></i>
+                  </GlobalButton>
+                </div>
               </motion.div>
             </div>
           }
@@ -427,7 +472,15 @@ const main = () => {
           customBody={
             <div class="text-center">
               <motion.h1 variants={STAGGER_CHILD_VARIANTS} class="mt-4">
-                🎉
+                <Image
+                  src="/images/approval-5.svg"
+                  alt="image"
+                  width={0}
+                  height={0}
+                  sizes="100vw"
+                  style={{ width: 150, height: 'auto' }}
+                  class="d-inline-block align-text-top"
+                />
               </motion.h1>
               <motion.div variants={STAGGER_CHILD_VARIANTS} class="mt-4">
                 <GlobalButton
@@ -439,8 +492,12 @@ const main = () => {
                         onboarding: !apiData.profile.data?.onboarding,
                       },
                     });
-
                     if (result) {
+                      await addNotificationApi({
+                        message: 'Welcome to your dashboard! 🎉',
+                        message_detail: `We're excited to have you with us. Take some time to look around and get familiar with everything here!`,
+                      });
+
                       router.push(PAGES.profile.directory);
                     }
                   }}
@@ -478,6 +535,13 @@ const main = () => {
           setIsPageReady(true);
           if (router?.query?.step) {
             setStep(router?.query?.step);
+          } else {
+            if (data.account_type == 'employer') {
+              setStep('createCompanyProfile');
+            }
+            if (data.account_type == 'job_seeker') {
+              setStep('createResume');
+            }
           }
         }
       } else {

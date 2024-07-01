@@ -23,11 +23,11 @@ import JobDetails from './JobDetails';
 import { useModal } from '../context/modal';
 import { useRouter } from 'next/router';
 import ResumeModal from './ResumeModal';
-import { title } from 'process';
+import Joyride from 'react-joyride';
 
 function ProfileJobSeeker({ isLoading, isEmpty, item, onSuccessFunction }) {
   const router = useRouter();
-  const { apiData } = useApiCall();
+  const { apiData, updateProductTourApi } = useApiCall();
   const { isModalOpen, toggleModal } = useModal();
   const [modalConfig, setModalConfig] = useState({
     title: '',
@@ -89,10 +89,6 @@ function ProfileJobSeeker({ isLoading, isEmpty, item, onSuccessFunction }) {
   };
 
   const detailsConfig2 = {
-    // aboutMe: {
-    //   title: 'About Me',
-    //   value: getDisplayValue(item, 'about_me'),
-    // },
     gender: {
       title: 'Gender',
       value: getDisplayValue(
@@ -108,6 +104,10 @@ function ProfileJobSeeker({ isLoading, isEmpty, item, onSuccessFunction }) {
     phoneNumber: {
       title: 'Phone Number',
       value: getDisplayValue(item, 'phone_number'),
+    },
+    email: {
+      title: 'Email',
+      value: getDisplayValue(item, 'email'),
     },
     address: {
       title: 'Address',
@@ -128,6 +128,14 @@ function ProfileJobSeeker({ isLoading, isEmpty, item, onSuccessFunction }) {
         'name',
         ''
       )}`,
+    },
+    summary: {
+      title: 'Summary',
+      value: getDisplayValue(item, 'summary'),
+    },
+    otherInformation: {
+      title: 'Other Information',
+      value: getDisplayValue(item, 'other_information'),
     },
   };
 
@@ -243,7 +251,7 @@ function ProfileJobSeeker({ isLoading, isEmpty, item, onSuccessFunction }) {
           {value?.title && (
             <label className="small text-muted">{value.title}</label>
           )}
-          <div className="mb-0 text-truncate">{value.value}</div>
+          <div className="mb-0">{value.value}</div>
         </li>
       );
     });
@@ -267,15 +275,17 @@ function ProfileJobSeeker({ isLoading, isEmpty, item, onSuccessFunction }) {
 
     return (
       <>
-        {checkIsOwnerResume() && (
-          <div class="d-flex">
-            <strong class="flex-grow-1 text-muted">{title}</strong>
-            <span class="text-primary clickable" onClick={handleEditClick}>
-              <i class="bi bi-pencil"></i>
-            </span>
-          </div>
-        )}
         <div>
+          {checkIsOwnerResume() ? (
+            <div class="d-flex">
+              <strong class="flex-grow-1 text-muted">{title}</strong>
+              <span class="text-primary clickable" onClick={handleEditClick}>
+                <i class="bi bi-pencil me-1"></i> Edit
+              </span>
+            </div>
+          ) : (
+            <strong class="flex-grow-1 text-muted">{title}</strong>
+          )}
           <ul class="list-unstyled bg-light rounded-2 p-2 mt-2">
             {mapValue(config)}
           </ul>
@@ -284,8 +294,49 @@ function ProfileJobSeeker({ isLoading, isEmpty, item, onSuccessFunction }) {
     );
   };
 
+  const tourConfig = {
+    steps: [
+      {
+        target: '.tour-edit',
+        content: `Welcome aboard! here's the details about your profile. Click 'Edit' anytime to make changes.`,
+      },
+      {
+        target: '.tour-dashboard',
+        content: `Click here to access your dashboard.`,
+      },
+    ],
+  };
+
+  const handleCancelProductTour = async (status = false) => {
+    await updateProductTourApi({
+      postData: {
+        profile_tour: status,
+      },
+    });
+  };
+
+  const callbackProductTour = (data) => {
+    const { action } = data;
+    if (action === 'reset') {
+      handleCancelProductTour(!apiData.profile.data?.profile_tour);
+    }
+  };
+
   return (
     <div class="row">
+      {apiData.profile.data?.profile_tour === false && (
+        <Joyride
+          steps={tourConfig.steps}
+          continuous={true}
+          showSkipButton={true}
+          callback={callbackProductTour}
+          styles={{
+            options: {
+              primaryColor: '#0d6efd',
+            },
+          }}
+        />
+      )}
       <ResumeModal
         section={modalConfig.section}
         title={modalConfig.title}
@@ -295,7 +346,7 @@ function ProfileJobSeeker({ isLoading, isEmpty, item, onSuccessFunction }) {
         }}
       />
       <div class="col-lg-4">
-        <div class="card">
+        <div class="card details-card-size">
           <div class="card-body">
             <div class="text-center mb-4">
               <div>
@@ -320,7 +371,7 @@ function ProfileJobSeeker({ isLoading, isEmpty, item, onSuccessFunction }) {
                 </div>
               </div>
               {checkIsOwnerResume() && (
-                <div class="mt-4">
+                <div class="mt-4 tour-dashboard">
                   <GlobalButton
                     btnType="button"
                     btnClass="btn btn-primary w-100"
@@ -333,11 +384,13 @@ function ProfileJobSeeker({ isLoading, isEmpty, item, onSuccessFunction }) {
                 </div>
               )}
             </div>
-            {displayItem({
-              title: 'Job Details',
-              section: 'jobDetails',
-              config: detailsConfig1,
-            })}
+            <div class="tour-edit">
+              {displayItem({
+                title: 'Job Details',
+                section: 'jobDetails',
+                config: detailsConfig1,
+              })}
+            </div>
           </div>
         </div>
       </div>
@@ -345,7 +398,7 @@ function ProfileJobSeeker({ isLoading, isEmpty, item, onSuccessFunction }) {
         <div class="mb-3 sticky-top sticky-top-padding">
           <div class="row">
             <div class="col">
-              <div class="card mt-lg-0 mt-3">
+              <div class="card mt-lg-0 mt-3 details-card-size">
                 {isLoading && <LoadingSpinner />}
                 {isEmpty && <EmptyMessage />}
                 {!isEmpty && (

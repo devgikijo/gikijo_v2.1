@@ -59,7 +59,7 @@ const main = () => {
               >
                 <div class="row">
                   <div class="col">
-                    <div class="card vh-100">
+                    <div class="card">
                       <JobDetails />
                     </div>
                   </div>

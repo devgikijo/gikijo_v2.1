@@ -62,6 +62,19 @@ const handler = async (req, res) => {
           .json({ message: error2.message, error: error2.stack });
       }
 
+      const { data: data3, error: error3 } = await supabase
+        .from('token')
+        .update({
+          used: true,
+        })
+        .eq('used_session_id', event.data.object.id);
+
+      if (error3) {
+        return res
+          .status(400)
+          .json({ message: error3.message, error: error3.stack });
+      }
+
       res.send({ received: true });
     } else {
       res.send({ received: true });

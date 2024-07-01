@@ -3,8 +3,9 @@ import { useTempData } from '../context/tempData';
 import { COUNTRIES, EMPLOYMENT_TYPES, SALARY_TYPES } from '../utils/constants';
 import toast from 'react-hot-toast';
 import moment from 'moment';
+import { jobCardContent } from '../utils/helper';
 
-const JobCard = ({ selected = null, item, displayOnly = false }) => {
+const JobCard = ({ item, displayOnly = false, showSettingsInfo = false }) => {
   const { publishJobPostApi } = useApiCall();
   const { tempData, setValueTempData } = useTempData();
 
@@ -19,8 +20,9 @@ const JobCard = ({ selected = null, item, displayOnly = false }) => {
         theme: 'alert-success',
         content: (
           <span>
-            <i class="bi bi-broadcast me-1"></i> Your post is now published on
-            Gikijo. To get more views, send it to our suggested channels.
+            <i class="bi bi-broadcast me-1"></i> Your post is now live on
+            Gikijo. To reach more people, share it through the suggested
+            channels below.
           </span>
         ),
       },
@@ -67,87 +69,99 @@ const JobCard = ({ selected = null, item, displayOnly = false }) => {
     },
   };
 
-  const jobData = {
-    status:
-      item?.job_post_validity?.is_published == true ? 'publish' : 'unpublish',
-    title: item.title,
-    employmentType: EMPLOYMENT_TYPES.find(
-      (type) => type.value === item?.employment_type
-    )?.name,
-    createdAt: moment(item?.created_at).fromNow(),
-    salary: `RM ${item?.min_salary} -  ${item?.max_salary} ${
-      SALARY_TYPES.find((type) => type.value === item?.salary_type)?.name
-    }`,
-    companyName: item.company_profile?.company_name,
-    location: `${
-      item.company_profile?.state ? `${item.company_profile.state}, ` : ''
-    }${
-      COUNTRIES.find((type) => type.value === item.company_profile?.country)
-        ?.name
-    }`,
-    requirements: item?.requirements ? item?.requirements : [],
-    benefits: item?.benefits ? item?.benefits : [],
-  };
-
   return (
     <>
       <div
         class={`card card-size ${
-          displayOnly ? 'text-muted card-no-border' : 'card-move hover-border'
-        } ${selected ? 'selected-border' : ''}`}
+          displayOnly ? 'text-muted card-no-border' : ''
+        } 
+       ${
+         tempData.selectedItem?.jobDetails?.id === item.id
+           ? ''
+           : displayOnly
+           ? ''
+           : 'card-move hover-border'
+       }`}
       >
         <div class="card-body">
           <div class="row">
-            <div class="col-8">
-              <h6 class="mb-0">{jobData.title}</h6>
+            <div class="col-lg">
+              <h6 class="mb-0">{jobCardContent(item).title}</h6>
+              <div class="col-auto">
+                <small class="text-muted">
+                  {jobCardContent(item).employmentType}
+                </small>
+                <i class="bi bi-dot"></i>
+                <small class="text-muted">
+                  {jobCardContent(item).createdAt}
+                </small>
+              </div>
             </div>
-            {displayOnly ? (
+            {displayOnly && showSettingsInfo ? (
               <div class="col-auto ms-auto">
                 <span
                   class={`badge rounded-pill ${
-                    statusConfig[jobData.status]?.theme.badge
+                    statusConfig[jobCardContent(item).status]?.theme.badge
                   }`}
                 >
-                  {statusConfig[jobData.status]?.theme.icon}{' '}
-                  {statusConfig[jobData.status]?.status}
+                  {statusConfig[jobCardContent(item).status]?.theme.icon}{' '}
+                  {statusConfig[jobCardContent(item).status]?.status}
                 </span>
               </div>
             ) : (
-              ''
+              <>
+                {displayOnly ? (
+                  ''
+                ) : (
+                  <>
+                    {tempData.selectedItem?.jobDetails?.id === item.id ? (
+                      <div class="col-auto ms-auto">
+                        <i class="bi bi-caret-right-fill text-primary"></i>
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </>
+                )}
+              </>
             )}
-          </div>
-          <div>
-            <small class="text-muted">{jobData.employmentType}</small>
-            <i class="bi bi-dot"></i>
-            <small class="text-muted">{jobData.createdAt}</small>
           </div>
           <ul class="list-unstyled mt-3">
             <li>
-              <i class="bi bi-building"></i> {jobData.companyName}
+              <i class="bi bi-building"></i> {jobCardContent(item).companyName}
             </li>
             <li>
-              <i class="bi bi-cash"></i> {jobData.salary}
+              <i class="bi bi-cash"></i> {jobCardContent(item).salary}
             </li>
-            <li class="mb-2">
-              <i class="bi bi-geo-alt"></i> {jobData.location}
-            </li>
-            {jobData.benefits.slice(0, 3).map((item, index) => {
-              return (
-                <li key={index} class="text-truncate">
-                  <span style={{ marginRight: '0.5rem' }}>&#8226;</span> {item}
-                </li>
-              );
-            })}
+            {jobCardContent(item).location ? (
+              <li class="mb-2">
+                <i class="bi bi-geo-alt"></i> {jobCardContent(item).location}
+              </li>
+            ) : (
+              ''
+            )}
+            {jobCardContent(item)
+              .benefits.slice(0, 3)
+              .map((item, index) => {
+                return (
+                  <li key={index} class="text-truncate">
+                    <span style={{ marginRight: '0.5rem' }}>&#8226;</span>
+                    {item}
+                  </li>
+                );
+              })}
           </ul>
         </div>
         {displayOnly ? <span class="transparent-gradient"></span> : ''}
       </div>
-      {displayOnly ? (
+      {displayOnly && showSettingsInfo ? (
         <div
-          class={`alert ${statusConfig[jobData.status]?.infoBox.theme} small`}
+          class={`alert ${
+            statusConfig[jobCardContent(item).status]?.infoBox.theme
+          } small`}
           role="alert"
         >
-          {statusConfig[jobData.status]?.infoBox.content}
+          {statusConfig[jobCardContent(item).status]?.infoBox.content}
         </div>
       ) : (
         ''

@@ -22,10 +22,12 @@ import JobDetails from './JobDetails';
 import { useModal } from '../context/modal';
 import CompanyProfileModal from './CompanyProfileModal';
 import { useRouter } from 'next/router';
+import { getDisplayValue } from '../utils/helper';
+import Joyride from 'react-joyride';
 
 function ProfileEmployer({ isLoading, isEmpty, item, onSuccessFunction }) {
   const { isModalOpen, toggleModal } = useModal();
-  const { apiData } = useApiCall();
+  const { apiData, updateProductTourApi } = useApiCall();
   const router = useRouter();
   const [modalConfig, setModalConfig] = useState({
     title: '',
@@ -34,10 +36,6 @@ function ProfileEmployer({ isLoading, isEmpty, item, onSuccessFunction }) {
 
   const findInArray = (array, property, value) => {
     return array.find((item) => item[property] === value);
-  };
-
-  const getDisplayValue = (item, property, defaultValue = '-') => {
-    return item?.[property] ?? defaultValue;
   };
 
   const profileConfig = {
@@ -103,22 +101,26 @@ function ProfileEmployer({ isLoading, isEmpty, item, onSuccessFunction }) {
     address: {
       title: 'Address',
       value: `${getDisplayValue(item, 'address_1')}${
-        getDisplayValue(item, 'address_2')
+        getDisplayValue(item, 'address_2', '')
           ? `, ${getDisplayValue(item, 'address_2')}`
           : ''
       }${
-        getDisplayValue(item, 'city')
+        getDisplayValue(item, 'city', '')
           ? `, ${getDisplayValue(item, 'city')}`
           : ''
       }${
-        getDisplayValue(item, 'state')
+        getDisplayValue(item, 'state', '')
           ? `, ${getDisplayValue(item, 'state')}`
           : ''
-      }, ${getDisplayValue(
-        findInArray(COUNTRIES, 'value', item?.country),
-        'name',
-        ''
-      )}`,
+      }${
+        item?.country
+          ? `, ${getDisplayValue(
+              findInArray(COUNTRIES, 'value', item.country),
+              'name',
+              ''
+            )}`
+          : ''
+      }`,
     },
   };
 
@@ -138,21 +140,23 @@ function ProfileEmployer({ isLoading, isEmpty, item, onSuccessFunction }) {
           {value?.title && (
             <label className="small text-muted">{value.title}</label>
           )}
-          <div className="mb-0 text-truncate">{value.value}</div>
+          <div className="mb-0">{value.value}</div>
         </li>
       );
     });
   };
 
-  const displayItem = ({ title = '', section = '', config = null }) => {
+  const checkIsOwner = () => {
     let isOwner = false;
-
     if (item?.user_uuid && apiData.user?.data?.id) {
       if (item?.user_uuid === apiData.user.data.id) {
         isOwner = true;
       }
     }
+    return isOwner;
+  };
 
+  const displayItem = ({ title = '', section = '', config = null }) => {
     const handleEditClick = () => {
       toggleModal('editCompanyProfile');
       setModalConfig({ title, section });
@@ -160,7 +164,7 @@ function ProfileEmployer({ isLoading, isEmpty, item, onSuccessFunction }) {
 
     return (
       <>
-        {isOwner && (
+        {checkIsOwner() && (
           <div class="d-flex">
             <strong class="flex-grow-1 text-muted">{title}</strong>
             <span class="text-primary clickable" onClick={handleEditClick}>
@@ -177,8 +181,49 @@ function ProfileEmployer({ isLoading, isEmpty, item, onSuccessFunction }) {
     );
   };
 
+  const tourConfig = {
+    steps: [
+      {
+        target: '.tour-edit',
+        content: `Welcome aboard! here's the details about your company profile. Click 'Edit' anytime to make changes.`,
+      },
+      {
+        target: '.tour-dashboard',
+        content: `Click here to access your dashboard.`,
+      },
+    ],
+  };
+
+  const handleCancelProductTour = async (status = false) => {
+    await updateProductTourApi({
+      postData: {
+        profile_tour: status,
+      },
+    });
+  };
+
+  const callbackProductTour = (data) => {
+    const { action } = data;
+    if (action === 'reset') {
+      handleCancelProductTour(!apiData.profile.data?.profile_tour);
+    }
+  };
+
   return (
     <div class="row">
+      {apiData.profile.data?.profile_tour === false && (
+        <Joyride
+          steps={tourConfig.steps}
+          continuous={true}
+          showSkipButton={true}
+          callback={callbackProductTour}
+          styles={{
+            options: {
+              primaryColor: '#0d6efd',
+            },
+          }}
+        />
+      )}
       <CompanyProfileModal
         section={modalConfig.section}
         title={modalConfig.title}
@@ -188,7 +233,7 @@ function ProfileEmployer({ isLoading, isEmpty, item, onSuccessFunction }) {
         }}
       />
       <div class="col-lg-4">
-        <div class="card">
+        <div class="card details-card-size">
           <div class="card-body">
             <div class="text-center mb-4">
               <div>
@@ -212,19 +257,21 @@ function ProfileEmployer({ isLoading, isEmpty, item, onSuccessFunction }) {
                   </div>
                 </div>
               </div>
-              <div class="mt-4">
-                <GlobalButton
-                  btnType="button"
-                  btnClass="btn btn-primary w-100"
-                  btnOnClick={() => {
-                    router.push(PAGES.dashboard.directory);
-                  }}
-                >
-                  <i class="bi-bar-chart-line px-2"></i> View Dashboard
-                </GlobalButton>
-              </div>
+              {checkIsOwner() && (
+                <div class="mt-4 tour-dashboard">
+                  <GlobalButton
+                    btnType="button"
+                    btnClass="btn btn-primary w-100"
+                    btnOnClick={() => {
+                      router.push(PAGES.dashboard.directory);
+                    }}
+                  >
+                    <i class="bi-bar-chart-line px-2"></i> View Dashboard
+                  </GlobalButton>
+                </div>
+              )}
             </div>
-            <div>
+            <div class="tour-edit">
               {displayItem({
                 title: 'Basic Info',
                 section: 'basicInfo',
@@ -238,7 +285,7 @@ function ProfileEmployer({ isLoading, isEmpty, item, onSuccessFunction }) {
         <div class="mb-3 sticky-top sticky-top-padding">
           <div class="row">
             <div class="col">
-              <div class="card mt-lg-0 mt-3">
+              <div class="card mt-lg-0 mt-3  details-card-size">
                 {isLoading && <LoadingSpinner />}
                 {isEmpty && <EmptyMessage />}
                 {!isEmpty && (
@@ -248,7 +295,7 @@ function ProfileEmployer({ isLoading, isEmpty, item, onSuccessFunction }) {
                         <div>
                           <nav>
                             <div
-                              class="nav nav-tabs"
+                              class="nav nav-tabs "
                               id="nav-tab"
                               role="tablist"
                             >

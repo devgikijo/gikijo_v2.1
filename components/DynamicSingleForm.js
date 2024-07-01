@@ -17,7 +17,7 @@ function DynamicSingleForm({
           style={{ display: 'flex', alignItems: 'center' }}
           class="mb-2"
         >
-          {/* <span style={{ marginRight: '0.5rem' }}>&#8226;</span> */}
+          <span style={{ marginRight: '0.5rem' }}>&#8226;</span>
           <div class="input-group">
             <input
               type="text"

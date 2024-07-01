@@ -17,6 +17,8 @@ import { useModal } from '../context/modal.js';
 import GlobalButton from './GlobalButton.js';
 import SendHistoryModal from './SendHistoryModal.js';
 import { useRouter } from 'next/router.js';
+import Image from 'next/image.js';
+import { formatDisplayNumber } from '../utils/helper.js';
 
 const JobPostTable = () => {
   const router = useRouter();
@@ -42,35 +44,72 @@ const JobPostTable = () => {
         <LoadingSpinner isLoading={apiData.jobPost.isLoading} />
         {!apiData.jobPost.isLoading && apiData.jobPost.data.length == 0 ? (
           <div class="text-center mt-4">
-            {/* <EmptyData
-              icon={<i class="fs-5 bi bi-megaphone"></i>}
-              title="No post yet"
-              description="Create your first job post today!"
-            /> */}
-            <GlobalButton
-              btnType="button"
-              btnClass="btn btn-primary btn-lg me-2 mb-2"
-              btnOnClick={() => {
-                toggleModal('jobPost');
-                setValueTempData('selectedItem', {
-                  ...tempData.selectedItem,
-                  publishModalConfigType: 'create',
-                });
-              }}
-            >
-              <i class="bi bi-plus-lg"></i> Create Post
-            </GlobalButton>
+            {apiData.profile.data?.onboarding == true ? (
+              <EmptyData
+                icon={
+                  <Image
+                    src="/images/marketing-51.svg"
+                    alt="image"
+                    width={0}
+                    height={0}
+                    sizes="100vw"
+                    style={{ width: 100, height: 'auto' }}
+                    class="d-inline-block align-text-top"
+                  />
+                }
+                title="No post yet"
+                description={
+                  <div class="text-center">
+                    <p>Click the button below to create your first job post.</p>
+                    <GlobalButton
+                      btnType="button"
+                      btnClass="btn btn-primary me-2 mb-2"
+                      btnOnClick={() => {
+                        toggleModal('jobPost');
+                        setValueTempData('selectedItem', {
+                          ...tempData.selectedItem,
+                          publishModalConfigType: 'create',
+                        });
+                      }}
+                    >
+                      <i class="bi bi-plus-lg me-1"></i> Create Post
+                    </GlobalButton>
+                  </div>
+                }
+              />
+            ) : (
+              <div>
+                <div>
+                  <Image
+                    src="/images/marketing-51.svg"
+                    alt="image"
+                    width={0}
+                    height={0}
+                    sizes="100vw"
+                    style={{ width: 150, height: 'auto' }}
+                    class="d-inline-block align-text-top"
+                  />
+                </div>
+                <GlobalButton
+                  btnType="button"
+                  btnClass="btn btn-primary btn-lg me-2 mb-2 mt-3"
+                  btnOnClick={() => {
+                    toggleModal('jobPost');
+                    setValueTempData('selectedItem', {
+                      ...tempData.selectedItem,
+                      publishModalConfigType: 'create',
+                    });
+                  }}
+                >
+                  <i class="bi bi-plus-lg me-1"></i> Create Post
+                </GlobalButton>
+              </div>
+            )}
           </div>
         ) : (
           <table class="table table-responsive">
             <thead>
               <tr>
-                <th scope="col"></th>
-                <th scope="col"></th>
-                <th scope="col"></th>
-                <th scope="col"></th>
-                <th scope="col"></th>
-                <th scope="col"></th>
                 <th scope="col"></th>
               </tr>
             </thead>
@@ -99,8 +138,10 @@ const JobPostTable = () => {
                         job_post_validity.expired_at
                       ).fromNow()}`
                     : '',
-                  viewCount: job_post_validity?.view_count,
-                  shareCount: job_post_validity?.share_count,
+                  viewCount: formatDisplayNumber(job_post_validity?.view_count),
+                  shareCount: formatDisplayNumber(
+                    job_post_validity?.share_count
+                  ),
                   applicationCount: item.application?.length,
                   actionBtnApplicant: {
                     click: async () => {
@@ -195,106 +236,142 @@ const JobPostTable = () => {
 
                 return (
                   <tr class="align-middle" key={index}>
-                    <th scope="row">
-                      <div
-                        onClick={() => {
-                          toggleModal('jobPost');
-                          setValueTempData('selectedItem', {
-                            ...tempData.selectedItem,
-                            editJobDetails: item,
-                            publishModalConfigType: 'create',
-                          });
-                        }}
-                        class="clickable"
-                      >
-                        <span>{data.title} </span>
-                        <small class="mx-2">
-                          <i class="bi bi-pencil-square text-primary"></i>
-                        </small>
+                    <td class="row">
+                      <div class="col col-md-5">
+                        <div
+                          onClick={() => {
+                            toggleModal('jobPost');
+                            setValueTempData('selectedItem', {
+                              ...tempData.selectedItem,
+                              editJobDetails: item,
+                              publishModalConfigType: 'create',
+                            });
+                          }}
+                          class="clickable"
+                        >
+                          <strong>{data.title}</strong>
+                          <small class="mx-2">
+                            <i class="bi bi-pencil text-primary me-1"></i>
+                            <small class="text-primary">Edit</small>
+                          </small>
+                        </div>
+                        <p class="card-text fw-light">
+                          <small class="text-muted">
+                            {data.employmentType}{' '}
+                            {data.expiredAt && (
+                              <>
+                                <i class="bi bi-dot"></i> {data.expiredAt}
+                              </>
+                            )}
+                          </small>
+                        </p>
                       </div>
-                      <p class="card-text fw-light">
-                        <small class="text-muted">
-                          {data.employmentType}{' '}
-                          {data.expiredAt && (
-                            <>
-                              <i class="bi bi-dot"></i> {data.expiredAt}
-                            </>
-                          )}
-                        </small>
-                      </p>
-                    </th>
-                    <td>
-                      <OverlayTrigger
-                        overlay={
-                          <Tooltip>
-                            How many times your post has been viewed
-                          </Tooltip>
-                        }
-                      >
-                        <span class="text-muted">
-                          <i class="bi bi-eye"></i> {data.viewCount ?? 0}
-                        </span>
-                      </OverlayTrigger>
-                    </td>
-                    <td>
-                      <OverlayTrigger
-                        overlay={
-                          <Tooltip>
-                            The total number of applications received
-                          </Tooltip>
-                        }
-                      >
-                        <span
-                          class={`${data.actionBtnApplicant.theme.color} clickable`}
-                          onClick={data.actionBtnApplicant.click}
-                        >
-                          <i class="bi bi-people"></i>{' '}
-                          {data.applicationCount ?? 0}
-                        </span>
-                      </OverlayTrigger>
-                    </td>
-                    <td>
-                      <small class="text-muted">
-                        <span class={`badge rounded-pill ${data.theme.badge}`}>
-                          {data.theme.icon} {data.status}
-                        </span>
-                      </small>
-                      <small
-                        class="text-primary clickable"
-                        onClick={data.actionBtnStatus.click}
-                      >
-                        <span>{data.actionBtnStatus.icon}</span>
-                      </small>
-                    </td>
-                    <td>
-                      <span
-                        class={`${data.actionBtn.theme.color} clickable`}
-                        onClick={data.actionBtn.click}
-                      >
-                        <i class="bi bi-send me-1"></i> Channels
-                      </span>
-                    </td>
-                    <td>
-                      <span
-                        class={`${data.actionBtnHistory.theme.color} clickable`}
-                        onClick={data.actionBtnHistory.click}
-                      >
-                        <i class="bi bi-clock-history me-1"></i> History
-                      </span>
-                    </td>
-                    <td>
-                      {isPublished ? (
-                        <span
-                          class="text-success clickable"
-                          onClick={data.viewBtn.click}
-                        >
-                          <i class="bi bi-broadcast me-1"></i> Live
-                        </span>
-                      ) : (
-                        <span class="text-muted">
-                          <i class="bi bi-exclamation-circle me-1"></i> Live
-                        </span>
-                      )}
+                      <div class="col-lg col-md">
+                        <div class="row">
+                          <div class="col-lg mt-3 mt-md-0">
+                            <div class="row">
+                              <div class="col">
+                                <OverlayTrigger
+                                  overlay={<Tooltip>Total Post Views</Tooltip>}
+                                >
+                                  <span class="text-muted">
+                                    <i class="bi bi-eye"></i>{' '}
+                                    {data.viewCount ?? 0}
+                                  </span>
+                                </OverlayTrigger>
+                              </div>
+                              <div class="col">
+                                <OverlayTrigger
+                                  overlay={
+                                    <Tooltip>
+                                      Total Applications Submitted
+                                    </Tooltip>
+                                  }
+                                >
+                                  <span
+                                    class={`${data.actionBtnApplicant.theme.color} clickable`}
+                                    onClick={data.actionBtnApplicant.click}
+                                  >
+                                    <i class="bi bi-people"></i>{' '}
+                                    {data.applicationCount ?? 0}
+                                  </span>
+                                </OverlayTrigger>
+                              </div>
+                              <div class="col-auto">
+                                <>
+                                  <span
+                                    class={`badge rounded-pill ${data.theme.badge}`}
+                                  >
+                                    <small>
+                                      {data.theme.icon} {data.status}
+                                    </small>
+                                  </span>
+                                  <small
+                                    class="text-primary clickable"
+                                    onClick={data.actionBtnStatus.click}
+                                  >
+                                    <OverlayTrigger
+                                      overlay={
+                                        <Tooltip>Publish/Unpublished</Tooltip>
+                                      }
+                                    >
+                                      <span>{data.actionBtnStatus.icon}</span>
+                                    </OverlayTrigger>
+                                  </small>
+                                </>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-lg mt-3 mt-md-0">
+                            <div class="row">
+                              <div class="col">
+                                <span
+                                  class={`${data.actionBtn.theme.color} clickable`}
+                                  onClick={data.actionBtn.click}
+                                >
+                                  <i class="bi bi-send me-1"></i>{' '}
+                                  <small>Channels</small>
+                                </span>
+                              </div>
+                              <div class="col">
+                                <span
+                                  class={`${data.actionBtnHistory.theme.color} clickable`}
+                                  onClick={data.actionBtnHistory.click}
+                                >
+                                  <i class="bi bi-clock-history me-1"></i>{' '}
+                                  <small>History</small>
+                                </span>
+                              </div>
+                              <div class="col-auto">
+                                <>
+                                  {isPublished ? (
+                                    <OverlayTrigger
+                                      overlay={
+                                        <Tooltip>
+                                          Click to view your live post
+                                        </Tooltip>
+                                      }
+                                    >
+                                      <span
+                                        class="text-danger clickable"
+                                        onClick={data.viewBtn.click}
+                                      >
+                                        <i class="bi bi-broadcast me-1"></i>{' '}
+                                        <small>Live</small>
+                                      </span>
+                                    </OverlayTrigger>
+                                  ) : (
+                                    <span class="text-muted">
+                                      <i class="bi bi-exclamation-circle me-1"></i>{' '}
+                                      Live
+                                    </span>
+                                  )}
+                                </>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </td>
                   </tr>
                 );

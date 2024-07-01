@@ -18,7 +18,7 @@ const ApplicationActionModal = ({
   setToggleModal,
   applicationData,
 }) => {
-  const { apiData, setMainData, editApplicationApi } = useApiCall();
+  const { apiData, setMainData, editApplicationJobSeekerApi } = useApiCall();
   const [buttonConfig, setButtonConfig] = useState({
     submit: {
       isLoading: false,
@@ -38,6 +38,7 @@ const ApplicationActionModal = ({
         application_action_status: document.getElementById(
           'select-applicantion-action-status'
         ),
+        applicant_remarks: document.getElementById('input-applicant-remarks'),
       },
     };
 
@@ -91,9 +92,9 @@ const ApplicationActionModal = ({
     const addData = getKeyValue();
     var success = false;
 
-    const result = await editApplicationApi({
+    const result = await editApplicationJobSeekerApi({
       postData: addData,
-      id: applicationData.id,
+      applicationData: applicationData,
     });
 
     if (result) {
@@ -109,7 +110,12 @@ const ApplicationActionModal = ({
     });
 
     if (success) {
-      toast.success('Save!');
+      toast.success(
+        'Status Updated! we will notify the employer about the latest change in your application status.',
+        {
+          duration: 6000,
+        }
+      );
       handleClose();
 
       const application = apiData.application.data;
@@ -119,7 +125,8 @@ const ApplicationActionModal = ({
 
       if (itemIndex !== -1) {
         application[itemIndex].application_action_status =
-          newData.application_action_status;
+          newData?.application_action_status;
+        application[itemIndex].applicant_remarks = newData?.applicant_remarks;
         setMainData((prevData) => ({
           ...prevData,
           application: {
@@ -142,25 +149,40 @@ const ApplicationActionModal = ({
         <form onSubmit={onSubmitApplication}>
           <Modal.Body>
             <div class="mb-3">
-              <label
-                htmlFor="select-applicantion-action-status"
-                class="form-label"
-              >
-                Action
-              </label>
-              <select
-                class="form-select"
-                id="select-applicantion-action-status"
-                required
-              >
-                {APPLICATION_ACTION_STATUS.map((item, index) => {
-                  return (
-                    <option value={item.value} key={index}>
-                      {item.name}
-                    </option>
-                  );
-                })}
-              </select>
+              <div class="col mb-3">
+                <label
+                  htmlFor="select-applicantion-action-status"
+                  class="form-label"
+                >
+                  Action
+                </label>
+                <select
+                  class="form-select"
+                  id="select-applicantion-action-status"
+                  required
+                >
+                  {APPLICATION_ACTION_STATUS.map((item, index) => {
+                    return (
+                      <option value={item.value} key={index}>
+                        {item.name}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+              <div class="col mb-3">
+                <label htmlFor="input-applicant-remarks" class="form-label">
+                  Remarks
+                </label>
+                <textarea
+                  type="text"
+                  class="form-control"
+                  id="input-applicant-remarks"
+                  rows="3"
+                  maxLength={300}
+                  placeholder="Write additional comments here..."
+                />
+              </div>
             </div>
           </Modal.Body>
           <Modal.Footer>

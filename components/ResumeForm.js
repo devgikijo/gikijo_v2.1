@@ -24,6 +24,8 @@ const ResumeForm = ({ section = null, onSuccessFunction = null }) => {
     gender: '',
     date_of_birth: '',
     phone_number: '',
+    summary: '',
+    other_information: '',
     address_1: '',
     address_2: '',
     city: '',
@@ -127,6 +129,8 @@ const ResumeForm = ({ section = null, onSuccessFunction = null }) => {
         postcode: formValue.postcode,
         state: formValue.state,
         country: formValue.country,
+        summary: formValue.summary,
+        other_information: formValue.other_information,
       },
       formView: (
         <>
@@ -286,6 +290,34 @@ const ResumeForm = ({ section = null, onSuccessFunction = null }) => {
                   );
                 })}
               </select>
+            </div>
+            <div class="col mb-3">
+              <label htmlFor="input-summary" class="form-label">
+                Summary <small class="text-muted">(optional)</small>
+              </label>
+              <textarea
+                type="text"
+                class="form-control"
+                id="input-summary"
+                rows="3"
+                maxLength={300}
+                value={formValue.summary}
+                onChange={handleChange('summary')}
+              />
+            </div>
+            <div class="col mb-3">
+              <label htmlFor="input-other-information" class="form-label">
+                Other Information <small class="text-muted">(optional)</small>
+              </label>
+              <textarea
+                type="text"
+                class="form-control"
+                id="input-other-information"
+                rows="3"
+                maxLength={300}
+                value={formValue.other_information}
+                onChange={handleChange('other_information')}
+              />
             </div>
             <div class="d-flex justify-content-end">
               <GlobalButton

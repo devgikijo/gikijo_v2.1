@@ -59,9 +59,11 @@ const SendHistoryModal = () => {
     });
   };
 
-  const filteredJobs = jobData?.job_post_send_que?.filter(
-    (item) => item.payment_complete === true
-  );
+  // const filteredJobs = jobData?.job_post_send_que?.filter(
+  //   (item) => item.payment_complete === true
+  // );
+
+  const filteredJobs = jobData?.job_post_send_que;
 
   return (
     <>
@@ -89,6 +91,14 @@ const SendHistoryModal = () => {
                 <tbody>
                   {filteredJobs?.map((item, index) => {
                     const data = {
+                      paymentStatus: item?.payment_complete ? (
+                        'Paid'
+                      ) : (
+                        <>
+                          <i class="bi bi-clock-history me-1"></i> Pending
+                          payment
+                        </>
+                      ),
                       createdAt: item?.created_at
                         ? `${moment(item.created_at).fromNow()}`
                         : '',
@@ -132,8 +142,7 @@ const SendHistoryModal = () => {
                             <div class="col">
                               <h6 class="mb-0">{data?.channel.title}</h6>
                               <small class="text-muted">{data.createdAt}</small>
-                            </div>
-                            <div class="col text-end">
+                              <br />
                               {data.message_url[channelInfo.platform]
                                 .is_result_exist ? (
                                 <small class="text-primary">
@@ -141,10 +150,16 @@ const SendHistoryModal = () => {
                                   <i class="bi bi-arrow-up-right-circle"></i>
                                 </small>
                               ) : (
-                                <small class="text-muted">
-                                  <i class="bi bi-clock-history me-1"></i>{' '}
-                                  Awaiting admin approval
-                                </small>
+                                <>
+                                  <small class="text-muted">
+                                    {data.paymentStatus}
+                                  </small>
+                                  <br />
+                                  <small class="text-muted">
+                                    <i class="bi bi-clock-history me-1"></i>{' '}
+                                    Awaiting admin approval
+                                  </small>
+                                </>
                               )}
                             </div>
                           </div>

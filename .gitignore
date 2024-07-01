@@ -1,3 +1,6 @@
+# ignore test data
+/pages/api/test/
+
 # Ignore dependencies and build artifacts
 /node_modules/
 /.pnp

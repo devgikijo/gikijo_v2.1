@@ -58,17 +58,12 @@ function JobFilter({
 
   return (
     <>
-      <div class="card bg-primary mb-2 border-0 ">
+      <div class="card bg-primary mb-2 border-0  card-filter-bg-image">
         <div class="card-body text-white">
           {showTitle ? (
             <>
-              <h4 class="card-title" data-lang-key="index.fresh_job_xxx">
-                Find your dream job here
-              </h4>
-              <h6
-                class="card-subtitle fw-lighter mb-3"
-                data-lang-key="index.explore_job_xxx"
-              >
+              <h3 class="card-title">Find your dream job here</h3>
+              <h6 class="card-subtitle fw-lighter mb-3">
                 Explore job opportunities and apply with ease.
               </h6>
             </>

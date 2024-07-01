@@ -8,9 +8,11 @@ const CompanyCard = ({ selected, item }) => {
     title: item.company_name,
     about_us: item.about_us,
     companySize: COMPANY_SIZES.find((type) => type.value === item?.size)?.name,
-    location: `${item?.state ? `${item.state}, ` : ''}${
-      COUNTRIES.find((type) => type.value === item?.country)?.name
-    }`,
+    location: item?.state
+      ? `${item?.state ? `${item.state}, ` : ''}${
+          COUNTRIES.find((type) => type.value === item?.country)?.name
+        }`
+      : '',
     postCount: item.job_post?.length || 0,
   };
 
@@ -34,8 +36,14 @@ const CompanyCard = ({ selected, item }) => {
             <h6 class="card-title mb-0 text-truncate">{companyData.title}</h6>
           </div>
           <small class="text-muted">{companyData.companySize}</small>
-          <i class="bi bi-dot"></i>
-          <small class="text-muted">{companyData.location}</small>
+          {companyData.location ? (
+            <>
+              <i class="bi bi-dot"></i>
+              <small class="text-muted">{companyData.location}</small>
+            </>
+          ) : (
+            ''
+          )}
         </div>
         <div class="col-lg flex-grow-1">
           <p class="truncate-paragraph mt-3">{companyData.about_us}</p>

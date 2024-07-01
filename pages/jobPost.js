@@ -18,6 +18,7 @@ import { useTempData } from '../context/tempData.js';
 
 const main = () => {
   const { isModalOpen, toggleModal } = useModal();
+  const { apiData } = useApiCall();
   const { tempData, setValueTempData } = useTempData();
 
   const createPostButton = () => {
@@ -50,7 +51,11 @@ const main = () => {
         <PageHeader
           title={PAGES.job_post.name}
           description={PAGES.job_post.description}
-          rightContent={createPostButton()}
+          rightContent={
+            !apiData.jobPost.isLoading && apiData.jobPost.data.length > 0
+              ? createPostButton()
+              : ''
+          }
         />
         <JobPostTable />
       </div>

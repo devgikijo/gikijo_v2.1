@@ -23,15 +23,18 @@ const JobList = ({ showModalOnClick = true }) => {
 
   const fetchData = async ({ resetPage = false }) => {
     const from = resetPage ? 0 : page * ITEM_PER_PAGE;
-    const to = from + ITEM_PER_PAGE;
+
+    const to = from + ITEM_PER_PAGE - 1; // exclusive on the upper end (0 - 4, 5 - 9, ....)
     const result = await getAllJobPostApi({
       jobFilter: tempData.jobFilter,
       from,
       to,
     });
 
-    setJobListData((prev) => (resetPage ? result : [...prev, ...result]));
-    setPage((prev) => (resetPage ? 1 : prev + 1));
+    if (result) {
+      setJobListData((prev) => (resetPage ? result : [...prev, ...result]));
+      setPage((prev) => (resetPage ? 1 : prev + 1));
+    }
   };
 
   useEffect(() => {

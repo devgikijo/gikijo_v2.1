@@ -8,18 +8,29 @@ export default async function handler(req, res) {
 
   try {
     const supabase = getServiceSupabase();
-    const { postData, postId } = req.body;
+    const { postId } = req.body;
 
     const { data, error } = await supabase
-      .from('application')
-      .update({
-        ...postData,
-      })
-      .eq('id', postId)
-      .select();
+      .from('job_post_validity')
+      .select('view_count')
+      .eq('job_post_id', postId)
+      .single();
 
     if (error) {
       return res.status(400).json({ error: error, message: error.message });
+    }
+
+    if (data) {
+      const { data: data2, error: error2 } = await supabase
+        .from('job_post_validity')
+        .update({
+          view_count: data?.view_count + 1,
+        })
+        .eq('job_post_id', postId);
+
+      if (error2) {
+        return res.status(400).json({ error: error2, message: error2.message });
+      }
     }
 
     return res.status(200).json({ data: data });

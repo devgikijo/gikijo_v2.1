@@ -14,53 +14,54 @@ const Navbar = () => {
 
   return (
     <nav class="navbar navbar-expand-sm border-bottom bg-white">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="/">
-          <Image
-            src="/images/gikijo-logo.png"
-            alt="image"
-            width={0}
-            height={0}
-            sizes="100vw"
-            style={{ width: 100, height: 'auto' }}
-            class="d-inline-block align-text-top"
-          />
-        </a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#mynavbar"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="mynavbar">
-          <ul class="navbar-nav me-auto">
-            <li class="nav-item">
-              <Link href={PAGES.home.directory} class="nav-link">
-                {PAGES.home.name}
-              </Link>
-            </li>
-            <li class="nav-item">
-              <Link href={PAGES.jobs.directory} class="nav-link">
-                {PAGES.jobs.name}
-              </Link>
-            </li>
-            {apiData.profile.data?.account_type !== 'job_seeker' ? (
+      {router?.pathname !== PAGES.maintenance.directory ? (
+        <div class="container-fluid">
+          <Link href={PAGES.home.directory} class="navbar-brand">
+            <Image
+              src="/images/gikijo-logo.png"
+              alt="image"
+              width={0}
+              height={0}
+              sizes="100vw"
+              style={{ width: 100, height: 'auto' }}
+              class="d-inline-block align-text-top"
+            />
+          </Link>
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#mynavbar"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="mynavbar">
+            <ul class="navbar-nav me-auto">
               <li class="nav-item">
-                <Link href={PAGES.postJob.directory} class="nav-link">
-                  {PAGES.postJob.name}
+                <Link href={PAGES.home.directory} class="nav-link">
+                  {PAGES.home.name}
                 </Link>
               </li>
-            ) : (
-              ''
-            )}
-            {/* <li class="nav-item">
+              <li class="nav-item">
+                <Link href={PAGES.jobs.directory} class="nav-link">
+                  {PAGES.jobs.name}
+                </Link>
+              </li>
+              {apiData.profile.data?.account_type !== 'job_seeker' ? (
+                <li class="nav-item">
+                  <Link href={PAGES.postJob.directory} class="nav-link">
+                    {PAGES.postJob.name}
+                  </Link>
+                </li>
+              ) : (
+                ''
+              )}
+              {/* <li class="nav-item">
               <Link href="jobs" class="nav-link">
                 Community
               </Link>
             </li> */}
-            {/* <li className="nav-item dropdown">
+              {/* <li className="nav-item dropdown">
               <Link
                 className="nav-link dropdown-toggle"
                 href={'/#'}
@@ -78,57 +79,92 @@ const Navbar = () => {
                 </li>
               </ul>
             </li> */}
-          </ul>
-          <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-            {logedIn ? (
-              <>
-                {router?.route !== PAGES.dashboard.directory && (
+            </ul>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              {logedIn ? (
+                <>
+                  {router?.route !== PAGES.dashboard.directory && (
+                    <button
+                      class="btn btn-primary"
+                      type="button"
+                      onClick={() => {
+                        router.push(PAGES.dashboard.directory);
+                      }}
+                    >
+                      <i class="bi-bar-chart-line px-2"></i>
+                      {PAGES.dashboard.name}
+                    </button>
+                  )}
+                  <button
+                    class="btn btn-outline-primary btn-link"
+                    type="button"
+                    onClick={() => {
+                      toggleModal('logout');
+                    }}
+                  >
+                    <i class="bi-box-arrow-right"></i>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    class="btn btn-outline-primary"
+                    type="button"
+                    onClick={() => {
+                      toggleModal('auth');
+                    }}
+                  >
+                    {PAGES.login.name}
+                  </button>
                   <button
                     class="btn btn-primary"
                     type="button"
                     onClick={() => {
-                      router.push(PAGES.dashboard.directory);
+                      toggleModal('auth');
                     }}
                   >
-                    <i class="bi-bar-chart-line px-2"></i>
-                    {PAGES.dashboard.name}
+                    {PAGES.signup.name}
                   </button>
-                )}
-                <button
-                  class="btn btn-outline-primary btn-link"
-                  type="button"
-                  onClick={() => {
-                    toggleModal('logout');
-                  }}
-                >
-                  <i class="bi-box-arrow-right"></i>
-                </button>
-              </>
-            ) : (
-              <>
-                <button
-                  class="btn btn-outline-primary"
-                  type="button"
-                  onClick={() => {
-                    toggleModal('auth');
-                  }}
-                >
-                  {PAGES.login.name}
-                </button>
-                <button
-                  class="btn btn-primary"
-                  type="button"
-                  onClick={() => {
-                    toggleModal('auth');
-                  }}
-                >
-                  {PAGES.signup.name}
-                </button>
-              </>
-            )}
+                </>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <div class="container-fluid">
+          <div class="navbar-brand">
+            <Image
+              src="/images/gikijo-logo.png"
+              alt="image"
+              width={0}
+              height={0}
+              sizes="100vw"
+              style={{ width: 100, height: 'auto' }}
+              class="d-inline-block align-text-top"
+            />
+          </div>
+          <div class="collapse navbar-collapse" id="mynavbar">
+            <ul class="navbar-nav me-auto"></ul>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              {logedIn ? (
+                <>
+                  <button
+                    class="btn btn-outline-primary btn-link"
+                    type="button"
+                    onClick={() => {
+                      toggleModal('logout');
+                    }}
+                  >
+                    <i class="bi-box-arrow-right"></i>
+                  </button>
+                </>
+              ) : (
+                ''
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

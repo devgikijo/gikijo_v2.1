@@ -9,10 +9,10 @@ function JobTypeBadge() {
   return (
     <>
       <div class="my-5 text-center">
-        <div class="row g-2">
+        <div class="row g-5 justify-content-center">
           {EMPLOYMENT_TYPES.map((item, index) => (
             <div
-              class="col"
+              class="col-auto"
               key={index}
               onClick={() => {
                 setValueTempData('jobFilter', {
@@ -22,7 +22,7 @@ function JobTypeBadge() {
                 router.push(PAGES.jobs.directory);
               }}
             >
-              <span class="btn btn-outline-primary badge badge-status-primary">
+              <span class="btn btn-outline-primary badge breadcrumb-badge rounded-pill">
                 {item.name}
               </span>
             </div>

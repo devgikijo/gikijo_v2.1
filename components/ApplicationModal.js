@@ -7,8 +7,12 @@ import { APPLICATION_STATUS, PAGES } from '../utils/constants';
 import { useApiCall } from '../context/apiCall';
 
 const ApplicationModal = ({ toggleModal, setToggleModal, applicationData }) => {
-  const { apiData, setMainData, editApplicationApi, addNotificationApi } =
-    useApiCall();
+  const {
+    apiData,
+    setMainData,
+    editApplicationEmployerApi,
+    addNotificationApi,
+  } = useApiCall();
   const [buttonConfig, setButtonConfig] = useState({
     submit: {
       isLoading: false,
@@ -36,24 +40,24 @@ const ApplicationModal = ({ toggleModal, setToggleModal, applicationData }) => {
   };
 
   useEffect(() => {
-    if (applicationData) {
-      for (const key in applicationData) {
+    if (applicationData?.applicant) {
+      for (const key in applicationData.applicant) {
         if (formConfig().application.hasOwnProperty(key)) {
           const element = formConfig().application[key];
 
           if (element?.type === 'checkbox') {
-            if (applicationData[key]) {
+            if (applicationData.applicant[key]) {
               element.checked = true;
             } else {
               element.checked = false;
             }
           } else {
-            element.value = applicationData[key];
+            element.value = applicationData.applicant[key];
           }
         }
       }
     }
-  }, [applicationData, toggleModal.application]);
+  }, [applicationData?.applicant, toggleModal.application]);
 
   const getKeyValue = () => {
     const keyValue = {};
@@ -83,9 +87,10 @@ const ApplicationModal = ({ toggleModal, setToggleModal, applicationData }) => {
     const addData = getKeyValue();
     var success = false;
 
-    const result = await editApplicationApi({
+    const result = await editApplicationEmployerApi({
       postData: addData,
-      id: applicationData.id,
+      id: applicationData?.applicant?.id,
+      applicationData: applicationData,
     });
 
     if (result) {
@@ -96,7 +101,7 @@ const ApplicationModal = ({ toggleModal, setToggleModal, applicationData }) => {
         message_detail: `There's an update from the employer on your application status. Click here to check it out.`,
         action_url: PAGES.application.directory,
         action_title: 'View Status',
-        user_uuid: applicationData.applicant_uuid,
+        user_uuid: applicationData?.applicant.applicant_uuid,
         from_uuid: apiData.user.data?.id,
       });
     }
@@ -111,7 +116,7 @@ const ApplicationModal = ({ toggleModal, setToggleModal, applicationData }) => {
 
     if (success) {
       toast.success(
-        'Status Updated!, we will notify the applicant about the latest change in their application status.',
+        'Status Updated! we will notify the applicant about the latest change in their application status.',
         {
           duration: 6000,
         }

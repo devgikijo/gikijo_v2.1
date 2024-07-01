@@ -18,11 +18,12 @@ import ShareJobModal from './ShareJobModal';
 import { useModal } from '../context/modal';
 import Link from 'next/link';
 import { useTempData } from '../context/tempData';
+import Image from 'next/image';
 
 function JobDetails({ isLoading, showBtnExternalPage = true, item = null }) {
   const { toggleModal } = useModal();
   const { tempData, setValueTempData } = useTempData();
-  const { apiData } = useApiCall();
+  const { apiData, updateJobPostViewsApi } = useApiCall();
 
   const [buttonConfig, setButtonConfig] = useState({
     apply: {
@@ -43,28 +44,40 @@ function JobDetails({ isLoading, showBtnExternalPage = true, item = null }) {
     createdAt: moment(selectedJob?.created_at).fromNow(),
     company: selectedJob?.company_profile?.company_name || '-',
     companyUid: selectedJob?.company_profile?.uid,
-    salary: `RM ${selectedJob?.min_salary} -  ${selectedJob?.max_salary} ${
-      SALARY_TYPES.find((type) => type.value === selectedJob?.salary_type)?.name
-    }`,
+    salary: selectedJob?.min_salary
+      ? `RM ${selectedJob?.min_salary} -  ${selectedJob?.max_salary} ${
+          SALARY_TYPES.find((type) => type.value === selectedJob?.salary_type)
+            ?.name
+        }`
+      : 'Undisclosed',
     location: `${getDisplayValue(selectedJob?.company_profile, 'address_1')}${
-      getDisplayValue(selectedJob?.company_profile, 'address_2')
+      getDisplayValue(selectedJob?.company_profile, 'address_2', '')
         ? `, ${getDisplayValue(selectedJob?.company_profile, 'address_2')}`
         : ''
     }${
-      getDisplayValue(selectedJob?.company_profile, 'city')
+      getDisplayValue(selectedJob?.company_profile, 'city', '')
         ? `, ${getDisplayValue(selectedJob?.company_profile, 'city')}`
         : ''
     }${
-      getDisplayValue(selectedJob?.company_profile, 'state')
+      getDisplayValue(selectedJob?.company_profile, 'state', '')
         ? `, ${getDisplayValue(selectedJob?.company_profile, 'state')}`
         : ''
-    }, ${getDisplayValue(
-      findInArray(COUNTRIES, 'value', selectedJob?.company_profile?.country),
-      'name',
-      ''
-    )}`,
+    }${
+      selectedJob?.company_profile?.country
+        ? getDisplayValue(
+            findInArray(
+              COUNTRIES,
+              'value',
+              selectedJob.company_profile.country
+            ),
+            'name',
+            ''
+          )
+        : ''
+    }`,
     requirements: selectedJob?.requirements ? selectedJob?.requirements : [],
     benefits: selectedJob?.benefits ? selectedJob?.benefits : [],
+    additionalInfo: selectedJob?.additional_info || '',
     size: getDisplayValue(
       findInArray(COMPANY_SIZES, 'value', selectedJob?.company_profile?.size),
       'name',
@@ -82,15 +95,37 @@ function JobDetails({ isLoading, showBtnExternalPage = true, item = null }) {
       ),
   };
 
+  const updateViews = async (postId) => {
+    if (postId) {
+      await updateJobPostViewsApi({
+        postId: postId,
+      });
+    }
+  };
+
+  useEffect(() => {
+    updateViews(selectedJob?.id);
+  }, [selectedJob]);
+
   return (
     <>
       <ShareJobModal />
       <div>
         {isLoading && <LoadingSpinner />}
         {!selectedJob && (
-          <div class="mt-5">
+          <div class="vh-100">
             <EmptyData
-              icon={<i class="fs-1 bi bi-rocket-takeoff"></i>}
+              icon={
+                <Image
+                  src="/images/moving-forward-60.svg"
+                  alt="image"
+                  width={0}
+                  height={0}
+                  sizes="100vw"
+                  style={{ width: 100, height: 'auto' }}
+                  class="d-inline-block align-text-top"
+                />
+              }
               title="Start Your Job Journey"
               description="Click on any job post for more details."
             />
@@ -190,33 +225,54 @@ function JobDetails({ isLoading, showBtnExternalPage = true, item = null }) {
                     </GlobalButton>
                   </div>
                 </div>
-
-                <div>
+                <div class="scroll-box">
                   <ul class="list-unstyled bg-light rounded-2 p-2 mt-2">
                     <li class="mb-3">
                       <label class="small text-muted">Salary</label>
-                      <div class="mb-0 text-truncate">{jobData.salary}</div>
+                      <div class="mb-0">{jobData.salary}</div>
                     </li>
                     <li class="mb-3">
                       <label class="small text-muted">Requirements</label>
-                      <div class="mb-0 text-truncate">
+                      <div class="mb-0">
                         {jobData.requirements.map((selectedJob, index) => {
-                          return <li key={index}>{selectedJob}</li>;
+                          return (
+                            <li key={index}>
+                              <span style={{ marginRight: '0.5rem' }}>
+                                &#8226;
+                              </span>
+                              {selectedJob}
+                            </li>
+                          );
                         })}
                       </div>
                     </li>
                     <li class="mb-3">
                       <label class="small text-muted">Benefits</label>
-                      <div class="mb-0 text-truncate">
+                      <div class="mb-0">
                         {jobData.benefits.map((selectedJob, index) => {
-                          return <li key={index}>{selectedJob}</li>;
+                          return (
+                            <li key={index}>
+                              <span style={{ marginRight: '0.5rem' }}>
+                                &#8226;
+                              </span>
+                              {selectedJob}
+                            </li>
+                          );
                         })}
                       </div>
                     </li>
+                    {jobData?.additionalInfo ? (
+                      <li class="mb-3">
+                        <label class="small text-muted">Additional Info</label>
+                        <div class="mb-0">{jobData.additionalInfo}</div>
+                      </li>
+                    ) : (
+                      ''
+                    )}
                     <hr />
                     <li class="mb-3">
                       <label class="small text-muted">Company</label>
-                      <div class="mb-0 text-truncate">
+                      <div class="mb-0">
                         {jobData.company ? (
                           <Link
                             href={`${PAGES.profile.directory}?type=company&uid=${jobData.companyUid}`}
@@ -232,36 +288,34 @@ function JobDetails({ isLoading, showBtnExternalPage = true, item = null }) {
                     </li>
                     <li class="mb-3">
                       <label class="small text-muted">
+                        <i class="bi bi-geo-alt"></i> Location
+                      </label>
+                      <div class="mb-0">{jobData.location}</div>
+                    </li>
+                    <li class="mb-3">
+                      <label class="small text-muted">
                         Registration Number
                       </label>
-                      <div class="mb-0 text-truncate">
-                        {jobData.registration_number}
-                      </div>
+                      <div class="mb-0">{jobData.registration_number}</div>
                     </li>
                     <li class="mb-3">
                       <label class="small text-muted">Company Size</label>
-                      <div class="mb-0 text-truncate">{jobData.size}</div>
+                      <div class="mb-0">{jobData.size}</div>
                     </li>
                     <li class="mb-3">
                       <label class="small text-muted">Industries</label>
-                      <div class="mb-0 text-truncate">
+                      <div class="mb-0">
                         {jobData.industries.length > 0
                           ? jobData.industries.join(', ')
                           : ''}
                       </div>
-                    </li>
-                    <li class="mb-3">
-                      <label class="small text-muted">
-                        <i class="bi bi-geo-alt"></i> Location
-                      </label>
-                      <div class="mb-0 text-truncate">{jobData.location}</div>
                     </li>
                   </ul>
                 </div>
                 <Link
                   href={`${PAGES.profile.directory}?type=company&uid=${jobData.companyUid}`}
                   target="_blank"
-                  class="nav-link"
+                  class="nav-link mt-3"
                 >
                   <h6
                     class="text-primary text-end"

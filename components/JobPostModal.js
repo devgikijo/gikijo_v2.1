@@ -5,9 +5,11 @@ import toast from 'react-hot-toast';
 import { useEffect } from 'react';
 import {
   findInArray,
+  formatDisplayNumber,
   generateUniqueID,
   getDisplayValue,
   getStripe,
+  jobCardContent,
 } from '../utils/helper';
 import DynamicSingleForm from './DynamicSingleForm';
 import {
@@ -26,6 +28,8 @@ import { useTempData } from '../context/tempData';
 import { useModal } from '../context/modal';
 import { useRouter } from 'next/router';
 import JobCard from './JobCard';
+import Link from 'next/link';
+import Image from 'next/image';
 
 const JobPostModal = () => {
   const {
@@ -46,6 +50,7 @@ const JobPostModal = () => {
   const jobData = tempData.selectedItem.editJobDetails;
   const companyData = apiData.companyProfile.data;
   const [selectedItems, setSelectedItems] = useState([]);
+  const [selectedTokens, setSelectedTokens] = useState([]);
   const [toggleAnimation, setToggleAnimation] = useState(false);
   const [buttonConfig, setButtonConfig] = useState({
     submit: {
@@ -74,6 +79,7 @@ const JobPostModal = () => {
       editJobDetails: null,
     });
     setSelectedItems([]);
+    setSelectedTokens([]);
     setArrayElements({
       requirements: [''],
       benefits: [''],
@@ -90,6 +96,7 @@ const JobPostModal = () => {
         salary_type: document.getElementById('select-salary-type'),
         // requirements
         // benefits
+        additional_info: document.getElementById('input-additional-info'),
         agree_to_term: document.getElementById('input-agree-to-term'),
       },
     };
@@ -178,8 +185,9 @@ const JobPostModal = () => {
       salary: `RM ${item?.min_salary} - ${item?.max_salary} ${
         SALARY_TYPES.find((type) => type.value === item?.salary_type)?.name
       }`,
-      requirements: item?.requirements ? item?.requirements : [],
-      benefits: item?.benefits ? item?.benefits : [],
+      requirements: item?.requirements ? item.requirements : [],
+      benefits: item?.benefits ? item.benefits : [],
+      additionalInfo: item?.additional_info ? item.additional_info : '',
       location: `${getDisplayValue(companyData, 'address_1')}${
         getDisplayValue(companyData, 'address_2')
           ? `, ${getDisplayValue(companyData, 'address_2')}`
@@ -217,6 +225,7 @@ const JobPostModal = () => {
     Employment Type: ${jobData.employmentType},
     Requirements: ${jobData.requirements.join(', ') || 'None specified'},
     Benefits: ${jobData.benefits.join(', ') || 'None specified'},
+    Additional Info: ${jobData.additionalInfo},   
     Location: ${jobData.location},
     Salary: ${jobData.salary},
     Company: ${jobData.company},
@@ -349,6 +358,7 @@ const JobPostModal = () => {
           customerId: stripeCustomer.stripe_customer_id,
           totalPrice: checkTotalPrice(),
           bulkSendQue: selectedItems,
+          bulkToken: selectedTokens,
         });
 
         if (stripeCheckoutSession?.session_id) {
@@ -406,7 +416,14 @@ const JobPostModal = () => {
       0
     );
 
-    return totalAmount;
+    let totalTokenPrice = 0;
+    if (selectedTokens.length > 0) {
+      totalTokenPrice = selectedTokens.reduce((sum, { price }) => {
+        return sum + price;
+      }, 0);
+    }
+
+    return totalAmount - totalTokenPrice;
   };
 
   const animatedSwipe = ({ view, key, showAnimation = true }) => {
@@ -446,6 +463,31 @@ const JobPostModal = () => {
     );
   };
 
+  const getMessageContent = (item) => {
+    const jobItem = jobCardContent(item);
+
+    var benefitsList = '';
+    if (jobItem.benefits.length > 0) {
+      benefitsList = jobItem.benefits
+        .map((benefit) => `• ${benefit}`)
+        .join('\n');
+      benefitsList = `\n${benefitsList}\n`;
+    }
+
+    const applyLink = `${process.env.NEXT_PUBLIC_DOMAIN_URL}${PAGES.viewJob.directory}?jobId=${jobItem.uid}`;
+    const socialContent = `🟢 ${jobItem.title} 🟢\n\n 🏢 ${jobItem.companyName}\n 🏷️ ${jobItem.employmentType}\n 💵 ${jobItem.salary}\n 📍 ${jobItem.location}\n${benefitsList}\nApply here 👉 ${applyLink}`;
+
+    return socialContent;
+  };
+
+  const checkIfTokenExist = () => {
+    if (apiData.profile.data?.token?.length > 0) {
+      const myToken = apiData.profile.data.token.filter((item) => !item.used);
+      return myToken;
+    } else {
+      return [];
+    }
+  };
   const viewConfig = {
     create: {
       title: jobData ? 'Edit Post' : 'New Post',
@@ -455,7 +497,7 @@ const JobPostModal = () => {
             <div>
               <ul class="list-unstyled bg-light rounded-2 p-2 mt-2">
                 <li>
-                  <label class="small text-muted">Company Name</label>
+                  <label class="small text-muted">Company</label>
                   <div class="mb-0 text-truncate">
                     {companyData ? (
                       companyData.company_name
@@ -484,6 +526,7 @@ const JobPostModal = () => {
               class="form-control"
               id="input-job-title"
               required
+              maxLength={100}
             />
           </div>
           <div class="mb-3">
@@ -491,6 +534,9 @@ const JobPostModal = () => {
               Type
             </label>
             <select class="form-select" id="select-job-type" required>
+              <option value="" disabled>
+                Please select
+              </option>
               {EMPLOYMENT_TYPES.map((item, index) => {
                 return (
                   <option value={item.value} key={index}>
@@ -564,6 +610,18 @@ const JobPostModal = () => {
             }
             label="Benefits"
           />
+          <div class="mb-3">
+            <label htmlFor="input-additional-info" class="form-label">
+              Additional Info
+            </label>
+            <textarea
+              type="text"
+              class="form-control"
+              id="input-additional-info"
+              rows="3"
+              maxLength={300}
+            />
+          </div>
           <div class="form-check">
             <input
               class="form-check-input"
@@ -576,8 +634,14 @@ const JobPostModal = () => {
               htmlFor="input-agree-to-term"
             >
               <small>
-                I confirm that I have read and agreed to the terms and
-                conditions.
+                I confirm that I have read and agreed to the{' '}
+                <Link
+                  href={PAGES.terms_conditions.directory}
+                  class="clickable"
+                  target="_blank"
+                >
+                  terms and conditions.
+                </Link>
               </small>
             </label>
           </div>
@@ -630,18 +694,25 @@ const JobPostModal = () => {
                       // );
                     }}
                   >
-                    <JobCard item={jobData} displayOnly={true} />
+                    <JobCard
+                      item={jobData}
+                      displayOnly={true}
+                      showSettingsInfo={true}
+                    />
                   </div>
                 ) : (
                   ''
                 )}
-
                 <h5 class="mt-3">Send to</h5>
                 <ul class="list-group list-group-flush mt-3">
                   {apiData.allChannel.data?.map((item, index) => {
                     let channelIcon = SHARE_CHANNEL.find(
-                      (channel) => channel.platform === item.platform
+                      (channel) => channel.platform === item?.platform
                     );
+
+                    let channelEmploymentType = EMPLOYMENT_TYPES.find(
+                      (type) => type.value === item?.employment_type
+                    )?.name;
 
                     return (
                       <li key={index} class="list-group-item">
@@ -662,12 +733,20 @@ const JobPostModal = () => {
                                 {item.title}
                               </span>
                             </h6>
+                            <div>
+                              <small class="text-muted">
+                                {channelEmploymentType}
+                              </small>
+                              <i class="bi bi-dot"></i>
+                              <small class="text-muted">
+                                {formatDisplayNumber(item.total_subscribers)}{' '}
+                                subscribers
+                              </small>
+                            </div>
                             <p
                               class="card-text text-truncate text-muted"
                               style={{ maxWidth: '250px' }}
                             >
-                              {/* {item.description}{' '} */}
-                              {/* {item.required ? '(required)' : ''} */}
                               {item?.price
                                 ? `RM ${item?.price}/send`
                                 : `RM 0.00/send`}
@@ -702,7 +781,15 @@ const JobPostModal = () => {
                                           channel_id: item.id,
                                           job_post_id: jobData.id,
                                           user_uuid: apiData.user.data?.id,
-                                          message_content: `${item?.prefix_content}\nJOB_DETAILS\n${item?.suffix_content}`,
+                                          message_content: `${
+                                            item?.prefix_content
+                                              ? item.prefix_content
+                                              : ''
+                                          }\n${getMessageContent(jobData)}\n${
+                                            item?.suffix_content
+                                              ? item.suffix_content
+                                              : ''
+                                          }`,
                                         },
                                       ];
                                     }
@@ -716,6 +803,80 @@ const JobPostModal = () => {
                     );
                   })}
                 </ul>
+                {checkIfTokenExist().length > 0 ? (
+                  <>
+                    <h5 class="mt-3">Apply Discounts</h5>
+                    <ul class="list-group list-group-flush mt-3">
+                      {checkIfTokenExist().map((item, index) => {
+                        return (
+                          <li key={index} class="list-group-item">
+                            <div class="row">
+                              <div class="d-flex col-auto align-items-center">
+                                <Image
+                                  src="/images/coin-group-12.svg"
+                                  alt="image"
+                                  width={0}
+                                  height={0}
+                                  sizes="100vw"
+                                  style={{ width: 50, height: 50 }}
+                                  class="d-inline-block align-text-top"
+                                />
+                              </div>
+                              <div class="col">
+                                <h6 class="card-title">
+                                  <span>Token Balance</span>
+                                </h6>
+                                <p
+                                  class="card-text text-truncate text-muted"
+                                  style={{ maxWidth: '250px' }}
+                                >
+                                  {item?.token_amount ? item.token_amount : 0}{' '}
+                                  tokens
+                                </p>
+                              </div>
+                              <div class="col-auto">
+                                <div class="form-check form-switch form-switch-md">
+                                  <input
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    role="switch"
+                                    id={`input-switch-${item.id}`}
+                                    checked={selectedTokens.some(
+                                      (selected) => selected.id === item.id
+                                    )}
+                                    onChange={() => {
+                                      const isSelected = selectedTokens.some(
+                                        (selected) => selected.id === item.id
+                                      );
+
+                                      setSelectedTokens((prevSelected) => {
+                                        if (isSelected) {
+                                          return prevSelected.filter(
+                                            (selected) =>
+                                              selected.id !== item.id
+                                          );
+                                        } else {
+                                          return [
+                                            ...prevSelected,
+                                            {
+                                              ...item,
+                                            },
+                                          ];
+                                        }
+                                      });
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </>
+                ) : (
+                  ''
+                )}
               </div>
             ),
             key: currentSection,

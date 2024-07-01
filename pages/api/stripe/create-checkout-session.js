@@ -6,7 +6,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const handler = async (req, res) => {
   try {
     const supabase = getServiceSupabase();
-    const { customerId, totalPrice, bulkSendQue, user_uuid } = req.body;
+    const { customerId, totalPrice, bulkSendQue, bulkToken, user_uuid } =
+      req.body;
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       payment_method_types: ['card'],
@@ -30,7 +31,7 @@ const handler = async (req, res) => {
       success_url: `${req.headers.referer}`,
       cancel_url: `${req.headers.referer}`,
     });
-
+    console.log('hihihih');
     if (session) {
       let dataToUpdate = {
         provider: 'stripe',
@@ -61,7 +62,25 @@ const handler = async (req, res) => {
         .select();
 
       if (error2) {
-        return res.status(400).json({ error: error, message: error.message });
+        return res.status(400).json({ error: error2, message: error2.message });
+      }
+
+      if (bulkToken.length > 0) {
+        var newBulkToken = [];
+        bulkToken.map((item) => {
+          newBulkToken.push({ id: item.id, used_session_id: data.session_id });
+        });
+
+        const { data: data3, error: error3 } = await supabase
+          .from('token')
+          .upsert(newBulkToken) // bulk insert (array)
+          .select();
+
+        if (error3) {
+          return res
+            .status(400)
+            .json({ error: error3, message: error3.message });
+        }
       }
 
       res.send(data);

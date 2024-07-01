@@ -139,7 +139,7 @@ const Navbar = ({ children }) => {
               id="menu"
             >
               <li
-                class="w-100 pb-1 border-bottom text-muted mb-3 clickable"
+                class="w-100 pb-1 border-bottom text-dark mb-3 clickable"
                 onClick={() => {
                   router.push(PAGES.profile.directory);
                 }}

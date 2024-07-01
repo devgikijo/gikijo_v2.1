@@ -7,10 +7,12 @@ import { useApiCall } from '../context/apiCall';
 import { useRouter } from 'next/router';
 import { useTempData } from '../context/tempData';
 import { PAGES } from '../utils/constants';
+import JobCard from './JobCard';
 
 const ApplyJobModal = () => {
   const { isModalOpen, toggleModal } = useModal();
-  const { apiData, addNotificationApi, applyJobPostApi } = useApiCall();
+  const { apiData, addNotificationApi, applyJobPostApi, emailApplyJobPostApi } =
+    useApiCall();
   const { tempData, setValueTempData } = useTempData();
   const router = useRouter();
 
@@ -62,6 +64,15 @@ const ApplyJobModal = () => {
         action_url: PAGES.application.directory,
         action_title: 'View Status',
       });
+
+      await emailApplyJobPostApi({
+        postData: {
+          job_post: item,
+          applicant_remarks: document.getElementById('input-applicant-remarks')
+            .value,
+          applicant_name: apiData.resume.data?.full_name,
+        },
+      });
     }
 
     setButtonConfig({
@@ -93,11 +104,12 @@ const ApplyJobModal = () => {
         }}
       >
         <Modal.Header closeButton>
-          <Modal.Title>Application</Modal.Title>
+          <Modal.Title>Apply this job</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div class="mb-4">
-            <div class="text-muted small">
+            <JobCard item={selectedJob} displayOnly />
+            {/* <div class="text-muted small">
               <ul class="list-unstyled bg-light rounded-2 p-2 mt-2">
                 <li class="mb-2">
                   <small class="text-muted">Apply to</small>
@@ -106,7 +118,6 @@ const ApplyJobModal = () => {
                     by {selectedJob?.company_profile?.company_name}
                   </p>
                 </li>
-                <hr />
                 <li class="mb-2">
                   <small class="text-muted">With Profile</small>
                   <p class="fw-bold mb-0 text-truncate">
@@ -130,6 +141,33 @@ const ApplyJobModal = () => {
                   </small>
                 </li>
               </ul>
+            </div> */}
+            <div class="col mb-3">
+              <label htmlFor="input-applicant-remarks" class="form-label">
+                Profile
+              </label>
+              <div class="card clickable">
+                <div class="card-body py-2">
+                  <div
+                    class="row"
+                    onClick={() => {
+                      if (apiData.resume?.data?.uid) {
+                        window.open(
+                          `${PAGES.profile.directory}?type=resume&uid=${apiData.resume?.data?.uid}`,
+                          '_blank'
+                        );
+                      }
+                    }}
+                  >
+                    <div class="col-auto h3 mb-0">
+                      <i className="bi bi-person-circle"></i>
+                    </div>
+                    <div class="col px-0 d-flex flex-column justify-content-center">
+                      <span className="mb-0">{resumeDetails.full_name}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             <div class="col mb-3">
               <label htmlFor="input-applicant-remarks" class="form-label">

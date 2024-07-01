@@ -9,7 +9,7 @@ const PageHeader = ({ title, description, rightContent }) => {
           <h4 class="mb-0 fw-bolder">{title}</h4>
           <small>{description}</small>
         </div>
-        <div class="col text-end">{rightContent}</div>
+        {rightContent ? <div class="col text-end">{rightContent}</div> : ''}
       </div>
     </>
   );

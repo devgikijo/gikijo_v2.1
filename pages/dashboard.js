@@ -17,6 +17,7 @@ import Breadcrumb from '../components/BreadCrumb.js';
 import PageHeader from '../components/PageHeader.js';
 import { findInArray, getDisplayValue } from '../utils/helper.js';
 import Joyride from 'react-joyride';
+import Image from 'next/image.js';
 
 const main = () => {
   const { apiData, updateNotificationApi, updateProductTourApi } = useApiCall();
@@ -270,7 +271,9 @@ const main = () => {
                           <div class="d-flex justify-content-between">
                             {item.action_title ? (
                               <strong
-                                class="text-primary clickable small"
+                                class={`text-primary clickable small ${
+                                  item.is_read ? 'text-muted' : ''
+                                }`}
                                 style={{ fontSize: '13px' }}
                               >
                                 {item.action_title}{' '}
@@ -306,10 +309,21 @@ const main = () => {
     cardZero: {
       job_seeker: {
         title: 'Find Job',
+        icon: (
+          <Image
+            src="/images/parachute-40.svg"
+            alt="image"
+            width={0}
+            height={0}
+            sizes="100vw"
+            style={{ width: 100, height: 'auto' }}
+            class="d-inline-block align-text-top"
+          />
+        ),
         description: (
           <p>
             {!resumeIsLoading
-              ? `Keep looking for jobs that suit you and apply to them. This will improve your chances of getting hired.`
+              ? `Continue to explore job listings that align with your career goals and apply to them.`
               : 'Loading...'}
           </p>
         ),
@@ -329,69 +343,77 @@ const main = () => {
     cardOne: {
       employer: {
         title: 'Company Profile',
+        icon: (
+          <Image
+            src="/images/presentation-6-82.svg"
+            alt="image"
+            width={0}
+            height={0}
+            sizes="100vw"
+            style={{ width: 100, height: 'auto' }}
+            class="d-inline-block align-text-top"
+          />
+        ),
         list: (
           <>
-            {!companyIsLoading ? (
-              <ul class="list-unstyled bg-light rounded-2 p-2">
-                <li>
-                  <small class="text-muted">Company Name</small>
-                  <p
-                    class="fw-bold mb-0 text-truncate"
-                    style={{ maxWidth: '200px' }}
-                  >
-                    {companyData?.company_name || '-'}
-                  </p>
-                </li>
-              </ul>
-            ) : (
-              <></>
-            )}
+            <ul class="list-unstyled bg-light rounded-2 p-2">
+              <li>
+                <small class="text-muted">Company Name</small>
+                <p
+                  class="fw-bold mb-0 text-truncate"
+                  style={{ maxWidth: '200px' }}
+                >
+                  {companyData?.company_name || '-'}
+                </p>
+              </li>
+            </ul>
           </>
         ),
         description: (
-          <p>
-            Keep your company profile current with the latest updates to engage
-            the best candidates.
-          </p>
+          <p>Keep your company profile current with the latest updates.</p>
         ),
         button: (
           <GlobalButton
             btnType="button"
             btnClass="btn btn-outline-primary btn-blog w-100"
             btnOnClick={() => {
-              router.push(`${PAGES.job_post.directory}?createPost=true`);
+              router.push(PAGES.profile.directory);
             }}
           >
-            <i class="bi bi-plus-lg me-1"></i> Create Post
+            <i class="bi bi-building me-1"></i> Company Profile
           </GlobalButton>
         ),
       },
       job_seeker: {
         title: 'My Profile',
+        icon: (
+          <Image
+            src="/images/profiling-80.svg"
+            alt="image"
+            width={0}
+            height={0}
+            sizes="100vw"
+            style={{ width: 100, height: 'auto' }}
+            class="d-inline-block align-text-top"
+          />
+        ),
         list: (
           <>
-            {!resumeIsLoading && resumeData ? (
-              <ul class="list-unstyled bg-light rounded-2 p-2">
-                <li>
-                  <small class="text-muted">Full Name</small>
-                  <p
-                    class="fw-bold mb-0 text-truncate"
-                    style={{ maxWidth: '200px' }}
-                  >
-                    {resumeData?.full_name || '-'}
-                  </p>
-                </li>
-              </ul>
-            ) : (
-              <></>
-            )}
+            <ul class="list-unstyled bg-light rounded-2 p-2">
+              <li>
+                <small class="text-muted">Full Name</small>
+                <p
+                  class="fw-bold mb-0 text-truncate"
+                  style={{ maxWidth: '200px' }}
+                >
+                  {resumeData?.full_name || '-'}
+                </p>
+              </li>
+            </ul>
           </>
         ),
         description: (
-          <p>
-            Regularly update your profile with your latest accomplishments to
-            market yourself effectively.
-          </p>
+          <p>Update your profile with your latest accomplishments.</p>
         ),
         button: (
           <GlobalButton
@@ -409,31 +431,38 @@ const main = () => {
     cardTwo: {
       employer: {
         title: 'Last Job Post',
+        icon: (
+          <Image
+            src="/images/completed-task-68.svg"
+            alt="image"
+            width={0}
+            height={0}
+            sizes="100vw"
+            style={{ width: 100, height: 'auto' }}
+            class="d-inline-block align-text-top"
+          />
+        ),
         list: (
           <>
-            {jobPostData.length > 0 ? (
-              <ul class="list-unstyled bg-light rounded-2 p-2">
-                <li>
-                  <small class="text-muted">Title</small>
-                  <p
-                    class="fw-bold mb-0 text-truncate"
-                    style={{ maxWidth: '200px' }}
-                  >
-                    {jobPostData[0]?.title || '-'}
-                  </p>
-                </li>
-              </ul>
-            ) : (
-              <></>
-            )}
+            <ul class="list-unstyled bg-light rounded-2 p-2">
+              <li>
+                <small class="text-muted">Title</small>
+                <p
+                  class="fw-bold mb-0 text-truncate"
+                  style={{ maxWidth: '200px' }}
+                >
+                  {jobPostData[0]?.title || '-'}
+                </p>
+              </li>
+            </ul>
           </>
         ),
         description: (
           <p>
             {!jobPostIsLoading
               ? jobPostData.length > 0
-                ? `You have ${jobPostData.length} job post right now. Create more job post and share it on all of our channels!`
-                : `Create and publish your first job post today and share it on all of our channels!`
+                ? `Create more job post and share it on all of our channels!`
+                : `Let's create and publish your first job post today.`
               : 'Loading...'}
           </p>
         ),
@@ -451,31 +480,38 @@ const main = () => {
       },
       job_seeker: {
         title: 'Last Application',
+        icon: (
+          <Image
+            src="/images/flying-kite-53.svg"
+            alt="image"
+            width={0}
+            height={0}
+            sizes="100vw"
+            style={{ width: 100, height: 'auto' }}
+            class="d-inline-block align-text-top"
+          />
+        ),
         list: (
           <>
-            {applicationData.length > 0 ? (
-              <ul class="list-unstyled bg-light rounded-2 p-2">
-                <li>
-                  <small class="text-muted">Job Title</small>
-                  <p
-                    class="fw-bold mb-0 text-truncate"
-                    style={{ maxWidth: '200px' }}
-                  >
-                    {applicationData[0]?.job_post?.title || '-'}
-                  </p>
-                </li>
-              </ul>
-            ) : (
-              <></>
-            )}
+            <ul class="list-unstyled bg-light rounded-2 p-2">
+              <li>
+                <small class="text-muted">Job Title</small>
+                <p
+                  class="fw-bold mb-0 text-truncate"
+                  style={{ maxWidth: '200px' }}
+                >
+                  {applicationData[0]?.job_post?.title || '-'}
+                </p>
+              </li>
+            </ul>
           </>
         ),
         description: (
           <p>
             {!applicationIsLoading
               ? applicationData.length > 0
-                ? `Congratulations on submitting your application! make sure to keep track of any updates on the status of your application.`
-                : `Keep looking for jobs that suit you and apply to them. This will improve your chances of getting hired.`
+                ? `Keep track of any updates to your application status.`
+                : `Keep track of any updates to your application status.`
               : 'Loading...'}
           </p>
         ),
@@ -495,32 +531,39 @@ const main = () => {
     cardThree: {
       employer: {
         title: 'Last Applicant',
+        icon: (
+          <Image
+            src="/images/team-meeting-17.svg"
+            alt="image"
+            width={0}
+            height={0}
+            sizes="100vw"
+            style={{ width: 100, height: 'auto' }}
+            class="d-inline-block align-text-top"
+          />
+        ),
         list: (
           <>
-            {jobPostData.length > 0 ? (
-              <ul class="list-unstyled bg-light rounded-2 p-2">
-                <li>
-                  <small class="text-muted">Full Name</small>
-                  <p
-                    class="fw-bold mb-0 text-truncate"
-                    style={{ maxWidth: '200px' }}
-                  >
-                    {applicantJobPost[0]?.application[0]?.resume?.full_name ||
-                      '-'}
-                  </p>
-                </li>
-              </ul>
-            ) : (
-              <></>
-            )}
+            <ul class="list-unstyled bg-light rounded-2 p-2">
+              <li>
+                <small class="text-muted">Full Name</small>
+                <p
+                  class="fw-bold mb-0 text-truncate"
+                  style={{ maxWidth: '200px' }}
+                >
+                  {applicantJobPost[0]?.application[0]?.resume?.full_name ||
+                    '-'}
+                </p>
+              </li>
+            </ul>
           </>
         ),
         description: (
           <p>
             {!jobPostIsLoading
               ? countApplications > 0
-                ? `You currently have ${countApplications} application. you can manage it through your applicants page.`
-                : `You have ${countApplications} application right now, you can manage it through your applicants page.`
+                ? `Keep track on any incoming applications.`
+                : `Keep track on any incoming applications.`
               : 'Loading...'}
           </p>
         ),
@@ -573,9 +616,10 @@ const main = () => {
                     <h6 className="card-title font-weight-bold">
                       {config[type]?.title}
                     </h6>
+                    <div className="text-center">{config[type]?.icon}</div>
                     <div className="text-muted small">
-                      {config[type]?.list}
                       {config[type]?.description}
+                      {config[type]?.list}
                     </div>
                     <div className="text-center d-flex align-items-end">
                       {config[type]?.button}
@@ -652,7 +696,7 @@ const main = () => {
   const handleCancelProductTour = async (status = false) => {
     await updateProductTourApi({
       postData: {
-        productTour: status,
+        product_tour: status,
       },
     });
   };

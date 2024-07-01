@@ -4,7 +4,13 @@ import { useEffect } from 'react';
 import { supabase } from '../utils/supabase';
 import { useRouter } from 'next/router';
 import { PAGES } from '../utils/constants';
-import { generateUniqueID } from '../utils/helper';
+import {
+  checkCookie,
+  generateUniqueID,
+  getCookie,
+  setCookie,
+  useInternetConnectivity,
+} from '../utils/helper';
 import { usePathname } from 'next/navigation';
 
 const ApiCallContext = createContext();
@@ -14,6 +20,7 @@ export const useApiCall = () => useContext(ApiCallContext);
 export const ApiCallProvider = ({ children }) => {
   const pathname = usePathname();
   const router = useRouter();
+
   const [mainData, setMainData] = useState({
     topCompanyProfile: {
       data: [],
@@ -103,6 +110,16 @@ export const ApiCallProvider = ({ children }) => {
     });
   };
 
+  const onError = (keyName, emptyData) => {
+    setMainData((prevData) => ({
+      ...prevData,
+      [keyName]: {
+        data: emptyData,
+        isLoading: false,
+      },
+    }));
+  };
+
   const getUserApi = async () => {
     try {
       const { data, error } = await supabase.auth.getUser();
@@ -123,6 +140,7 @@ export const ApiCallProvider = ({ children }) => {
       return data?.user ?? null;
     } catch (error) {
       console.error(error);
+      onError('user', null);
     }
   };
 
@@ -130,9 +148,13 @@ export const ApiCallProvider = ({ children }) => {
     try {
       const { data, error } = await supabase
         .from('profile')
-        .select('*, role (role_type)')
+        .select('*, role (role_type), token (*)')
         .single()
         .eq('user_uuid', mainData.user.data?.id);
+
+      if (error) {
+        throw error;
+      }
 
       setMainData((prevData) => ({
         ...prevData,
@@ -143,6 +165,7 @@ export const ApiCallProvider = ({ children }) => {
       }));
     } catch (error) {
       console.error(error);
+      onError('profile', null);
     }
   };
 
@@ -155,7 +178,7 @@ export const ApiCallProvider = ({ children }) => {
           full_name: postData.full_name,
         })
         .eq('user_uuid', mainData.user.data?.id)
-        .select()
+        .select('*, role (role_type), token (*)')
         .single();
 
       if (error) {
@@ -185,7 +208,7 @@ export const ApiCallProvider = ({ children }) => {
           onboarding: postData.onboarding,
         })
         .eq('user_uuid', mainData.user.data?.id)
-        .select()
+        .select('*, role (role_type), token (*)')
         .single();
 
       if (error) {
@@ -214,7 +237,7 @@ export const ApiCallProvider = ({ children }) => {
           account_type: postData.accountType,
         })
         .eq('user_uuid', mainData.user.data?.id)
-        .select()
+        .select('*, role (role_type), token (*)')
         .single();
 
       if (error) {
@@ -240,10 +263,10 @@ export const ApiCallProvider = ({ children }) => {
       const { data, error } = await supabase
         .from('profile')
         .update({
-          product_tour: postData.productTour,
+          ...postData,
         })
         .eq('user_uuid', mainData.user.data?.id)
-        .select()
+        .select('*, role (role_type), token (*)')
         .single();
 
       if (error) {
@@ -764,16 +787,59 @@ export const ApiCallProvider = ({ children }) => {
     }
   };
 
-  const editApplicationApi = async ({ postData, id }) => {
+  const emailApplyJobPostApi = async ({ postData }) => {
     try {
-      const response = await fetch('/api/application/update-status', {
+      const response = await fetch('/api/application/email-apply', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           postData: { ...postData },
-          postId: id,
+        }),
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        if (responseData) {
+        }
+      } else {
+        const error = await response.json();
+        toast.error(error.message);
+      }
+    } catch (error) {
+      toast.error('An error occurred while processing the request');
+    }
+  };
+
+  const updateJobPostViewsApi = async (postData) => {
+    if (await checkCookie(`post_view_${postData?.postId}`)) {
+      try {
+        const response = await fetch('/api/job-post/update-views', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            postId: postData?.postId,
+          }),
+        });
+      } catch (error) {
+        console.log('error', error);
+      }
+    }
+  };
+
+  const editApplicationJobSeekerApi = async ({ postData, applicationData }) => {
+    try {
+      const response = await fetch('/api/application/update-status-employer', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          postData: { ...postData },
+          applicationData: applicationData,
         }),
       });
 
@@ -781,7 +847,38 @@ export const ApiCallProvider = ({ children }) => {
         const responseData = await response.json();
         if (responseData) {
           const data = responseData.data;
-          return data.length > 0 ? data[0] : [];
+          return data;
+        }
+      } else {
+        const error = await response.json();
+        toast.error(error.message);
+      }
+    } catch (error) {
+      toast.error('An error occurred while processing the request');
+    }
+  };
+
+  const editApplicationEmployerApi = async ({ postData, applicationData }) => {
+    try {
+      const response = await fetch(
+        '/api/application/update-status-job-seeker',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            postData: { ...postData },
+            applicationData: applicationData,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        const responseData = await response.json();
+        if (responseData) {
+          const data = responseData.data;
+          return data;
         }
       } else {
         const error = await response.json();
@@ -931,6 +1028,7 @@ export const ApiCallProvider = ({ children }) => {
         },
         body: JSON.stringify({
           uid: postData.uid,
+          requestor_uuid: mainData.user.data?.id,
         }),
       });
 
@@ -1200,6 +1298,26 @@ export const ApiCallProvider = ({ children }) => {
     ]);
   };
 
+  const getWebsiteInfoApi = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('website_info')
+        .select('*')
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
+      if (data) {
+        return data;
+      }
+    } catch (error) {
+      toast.error(error.message);
+      return null;
+    }
+  };
+
   const promiseAllPublicApi = async () => {
     await Promise.all([
       getTopJobPostApi({
@@ -1214,28 +1332,65 @@ export const ApiCallProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const innitialFetch = async () => {
-      if (mainData.user.data == null) {
+    const handleInitialFetch = async () => {
+      const websiteInfo = await getWebsiteInfoApi();
+      const isUnderMaintenance = websiteInfo?.maintenance;
+
+      if (isUnderMaintenance) {
         const userData = await getUserApi();
-        if (!userData) {
-          const isAuthPage = Object.values(PAGES).some(
-            (page) => page?.directory === pathname && page?.isAuth
-          );
-          if (isAuthPage) {
-            toast.error('Please login to continue.', {
-              duration: 3000,
-            });
-            router.push(PAGES.home.directory);
+        if (userData && userData?.id === websiteInfo?.maintainer_user_id) {
+          console.log('Maintainer access granted! happy debugging!');
+        } else {
+          if (pathname !== PAGES.maintenance.directory) {
+            router.push(PAGES.maintenance.directory);
+          }
+        }
+
+        return;
+      } else if (
+        !isUnderMaintenance &&
+        pathname === PAGES.maintenance.directory
+      ) {
+        router.push(PAGES.home.directory);
+      } else {
+        if (mainData.user.data == null) {
+          const userData = await getUserApi();
+
+          if (!userData) {
+            const isAuthPage = Object.values(PAGES).some(
+              (page) => page?.directory === pathname && page?.isAuth
+            );
+            if (isAuthPage) {
+              toast.error('Please login to continue.', {
+                duration: 3000,
+              });
+              router.push(PAGES.home.directory);
+            }
           }
         }
       }
     };
 
-    innitialFetch();
+    const isOnline = useInternetConnectivity();
+    if (isOnline) {
+      handleInitialFetch();
+    } else {
+      toast.error(
+        'Connection error: Try refreshing the page once your internet connection is back.',
+        {
+          duration: 10000,
+        }
+      );
+    }
   }, [router.pathname]);
 
   useEffect(() => {
-    promiseAllPublicApi();
+    const isOnline = useInternetConnectivity();
+    if (isOnline) {
+      promiseAllPublicApi();
+    } else {
+      toast.error('No internet connection');
+    }
   }, []);
 
   useEffect(() => {
@@ -1330,9 +1485,9 @@ export const ApiCallProvider = ({ children }) => {
     if (error) {
       toast.error(error.message);
     } else {
+      resetData();
       toast.success('You have been logged out.');
       router.push(PAGES.home.directory);
-      resetData();
     }
   };
 
@@ -1362,9 +1517,12 @@ export const ApiCallProvider = ({ children }) => {
         deleteJobPostApi,
         publishJobPostApi,
         applyJobPostApi,
+        emailApplyJobPostApi,
+        updateJobPostViewsApi,
         getCompanyProfileApi,
         addCompanyProfileApi,
-        editApplicationApi,
+        editApplicationJobSeekerApi,
+        editApplicationEmployerApi,
         getJobDetailsApi,
         getResumeDetailsApi,
         getSingleCompanyProfileApi,

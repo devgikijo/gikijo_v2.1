@@ -17,9 +17,13 @@ import ApplicationActionModal from '../components/ApplicationActionModal.js';
 import JobDetails from '../components/JobDetails.js';
 import EmptyData from '../components/EmptyData.js';
 import LoadingSpinner from '../components/LoadingSpinner.js';
+import Image from 'next/image.js';
+import GlobalButton from '../components/GlobalButton.js';
+import { useRouter } from 'next/router.js';
 
 const main = () => {
   const { apiData, getApplicationApi } = useApiCall();
+  const router = useRouter();
   const [toggleModal, setToggleModal] = useState({
     application: false,
     jobDetails: false,
@@ -27,6 +31,8 @@ const main = () => {
 
   const [selectedJob, setSelectedJob] = useState(null);
   const [selectedApplication, setSelectedApplication] = useState(null);
+  const [remarksExpanded, setRemarksExpanded] = useState({});
+  const [employerRemarksExpanded, setEmployerRemarksExpanded] = useState({});
 
   const handleClose = (key) => {
     setToggleModal((prevState) => ({
@@ -58,17 +64,37 @@ const main = () => {
         {!apiData.application.isLoading &&
         apiData.application.data.length == 0 ? (
           <EmptyData
-            icon={<i class="fs-5 bi-file-earmark-arrow-up"></i>}
+            icon={
+              <Image
+                src="/images/time-39-491b4.svg"
+                alt="image"
+                width={0}
+                height={0}
+                sizes="100vw"
+                style={{ width: 100, height: 'auto' }}
+                class="d-inline-block align-text-top"
+              />
+            }
             title="No application yet"
-            description="Apply to jobs and track your applications status here."
+            description={
+              <div class="text-center">
+                <p>Apply to jobs and track your applications status here.</p>
+                <GlobalButton
+                  btnType="button"
+                  btnClass="btn btn-primary me-2 mb-2"
+                  btnOnClick={() => {
+                    router.push(PAGES.jobs.directory);
+                  }}
+                >
+                  <i class="bi bi-search me-1"></i> Find Job
+                </GlobalButton>
+              </div>
+            }
           />
         ) : (
           <table class="table table-responsive">
             <thead>
               <tr>
-                <th scope="col"></th>
-                <th scope="col"></th>
-                <th scope="col"></th>
                 <th scope="col"></th>
               </tr>
             </thead>
@@ -96,76 +122,175 @@ const main = () => {
                           status.value === item.application_action_status
                       ) || {}
                     ).name || 'Status not found',
-                  employerRemarks: item.employer_remarks,
-                  applicantRemarks: item.applicant_remarks
+                  employerRemarks: item?.employer_remarks
+                    ? item.employer_remarks
+                    : '-',
+                  applicantRemarks: item?.applicant_remarks
                     ? item.applicant_remarks
                     : '-',
                 };
 
                 return (
                   <tr key={index}>
-                    <th
-                      scope="row"
-                      class="col-4"
-                      onClick={() => {
-                        if (item.job_post) {
-                          setToggleModal({
-                            ...toggleModal,
-                            jobDetails: true,
-                          });
-                          setSelectedJob(item.job_post);
-                        }
-                      }}
-                    >
-                      <span class="clickable">{data.title}</span>
-                      <p class="card-text fw-light">
-                        <small class="text-muted">
-                          {data.employmentType}
-                          <i class="bi bi-dot"></i>
-                          Applied {data.createdAt}
-                        </small>
-                        {data.applicantRemarks ? (
-                          <>
-                            <br />
-                            <span class="text-muted small">
-                              <i class="bi bi-chat-left-text me-1"></i>{' '}
-                              {data.applicantRemarks}
-                            </span>
-                          </>
-                        ) : (
-                          ''
-                        )}
-                      </p>
-                    </th>
-                    <td class="align-middle">
-                      <small className="fw-light">Application Status</small>
-                      <br />
-                      {data.applicationStatusName}
-                    </td>
-                    <td
-                      class="align-middle"
-                      style={{ 'word-break': 'break-all' }}
-                    >
-                      <small className="fw-light">Employer Remarks</small>
-                      <br />
-                      {data.employerRemarks}
-                    </td>
-                    <td class="align-middle">
-                      <small className="fw-light">Action</small>
-                      <br />
-                      <strong
-                        className="text-primary fw-bold clickable"
-                        onClick={() => {
-                          setToggleModal({
-                            ...toggleModal,
-                            application: true,
-                          });
-                          setSelectedApplication(item);
-                        }}
-                      >
-                        {data.applicationActionStatusName}{' '}
-                        <i className="bi bi-pencil clickable text-primary"></i>
-                      </strong>
+                    <td scope="row" className="row">
+                      <div className="col col-md-5">
+                        <h6
+                          class="clickable mb-0"
+                          onClick={() => {
+                            if (item.job_post) {
+                              setToggleModal({
+                                ...toggleModal,
+                                jobDetails: true,
+                              });
+                              setSelectedJob(item.job_post);
+                            }
+                          }}
+                        >
+                          {data.title}
+                        </h6>
+                        <div className="row">
+                          <small>
+                            <div className="col text-muted">
+                              {data.employmentType}
+                              <i class="bi bi-dot"></i>
+                              Applied {data.createdAt}
+                              <div className="row mt-1">
+                                {data.applicantRemarks ? (
+                                  <div>
+                                    <i class="bi bi-chat-text me-1"></i>{' '}
+                                    {data.applicantRemarks.length > 30 ? (
+                                      <span>
+                                        {remarksExpanded[index]
+                                          ? data.applicantRemarks
+                                          : `${data.applicantRemarks.substring(
+                                              0,
+                                              30
+                                            )}...`}
+                                        <span
+                                          class="clickable text-primary ms-1"
+                                          onClick={() => {
+                                            setRemarksExpanded({
+                                              ...remarksExpanded,
+                                              [index]: !remarksExpanded[index],
+                                            });
+                                          }}
+                                        >
+                                          {remarksExpanded[index] ? (
+                                            <small>
+                                              read less
+                                              <i class="bi bi-chevron-up ms-1"></i>
+                                            </small>
+                                          ) : (
+                                            <small>
+                                              read more
+                                              <i class="bi bi-chevron-down ms-1"></i>
+                                            </small>
+                                          )}
+                                        </span>
+                                      </span>
+                                    ) : (
+                                      <span>{data.applicantRemarks}</span>
+                                    )}
+                                  </div>
+                                ) : (
+                                  ''
+                                )}
+                              </div>
+                            </div>
+                          </small>
+                        </div>
+                      </div>
+                      <div className="col-lg col-md mt-3 mt-md-0">
+                        <div className="row">
+                          <div className="col">
+                            <div style={{ 'word-break': 'break-all' }}>
+                              <small className="text-muted">
+                                Employer's Remarks
+                              </small>
+                              <br />
+                              <small>
+                                {data.employerRemarks.length > 30 ? (
+                                  <span>
+                                    {employerRemarksExpanded[index]
+                                      ? data.employerRemarks
+                                      : `${data.employerRemarks.substring(
+                                          0,
+                                          30
+                                        )}...`}
+                                    <span
+                                      class="clickable text-primary ms-1"
+                                      onClick={() => {
+                                        setEmployerRemarksExpanded({
+                                          ...employerRemarksExpanded,
+                                          [index]:
+                                            !employerRemarksExpanded[index],
+                                        });
+                                      }}
+                                    >
+                                      {employerRemarksExpanded[index] ? (
+                                        <small>
+                                          read less
+                                          <i class="bi bi-chevron-up ms-1"></i>
+                                        </small>
+                                      ) : (
+                                        <small>
+                                          read more
+                                          <i class="bi bi-chevron-down ms-1"></i>
+                                        </small>
+                                      )}
+                                    </span>
+                                  </span>
+                                ) : (
+                                  <span>{data.employerRemarks}</span>
+                                )}
+                              </small>
+                            </div>
+                          </div>
+                          <div className="col">
+                            <>
+                              <small className="text-muted">Status</small>
+                              <br />
+                              <small
+                                class="clickable text-primary"
+                                onClick={() => {
+                                  setToggleModal({
+                                    ...toggleModal,
+                                    application: true,
+                                  });
+                                  setSelectedApplication(item);
+                                }}
+                              >
+                                {data.applicationStatusName}
+                              </small>
+                            </>
+                          </div>
+                          {/* <div className="col">
+                            <div class="dropdown">
+                              <i
+                                class="bi bi-three-dots-vertical clickable"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                              ></i>
+                              <ul class="dropdown-menu">
+                                <li>
+                                  <a
+                                    class="dropdown-item"
+                                    onClick={() => {
+                                      setToggleModal({
+                                        ...toggleModal,
+                                        application: true,
+                                      });
+                                      setSelectedApplication(item);
+                                    }}
+                                  >
+                                    New Action
+                                  </a>
+                                </li>
+                              </ul>
+                            </div>
+                          </div> */}
+                        </div>
+                      </div>
                     </td>
                   </tr>
                 );
