@@ -13,7 +13,7 @@ import { useApiCall } from '../context/apiCall';
 
 const AuthModal = ({ show, setShow }) => {
   const { isModalOpen, toggleModal } = useModal();
-  const { loginApi, signUpApi } = useApiCall();
+  const { loginApi, loginWithGoogleApi, signUpApi } = useApiCall();
 
   const [activeTab, setActivetab] = useState('login');
   const [buttonConfig, setButtonConfig] = useState({
@@ -45,9 +45,26 @@ const AuthModal = ({ show, setShow }) => {
 
   const googleLoginButton = () => {
     return (
-      <button type="button" class="btn btn-outline-primary">
-        Continue with Google
-      </button>
+      <>
+        <button
+          type="button"
+          class="btn btn-light"
+          onClick={async () => {
+            await loginWithGoogleApi();
+          }}
+        >
+          <Image
+            src="/icons/continue-with-google.svg"
+            alt="image"
+            width={0}
+            height={0}
+            sizes="100vw"
+            style={{ width: 20, height: 20 }}
+            class="d-inline-block align-text-top me-2"
+          />
+          <span style={{ fontWeight: 500 }}>Continue with Google</span>
+        </button>
+      </>
     );
   };
 
@@ -235,6 +252,20 @@ const AuthModal = ({ show, setShow }) => {
                 </div>
                 {diviverOptionalForm()}
                 <div class="d-grid gap-2 mb-3">{googleLoginButton()}</div>
+                <p class="text-center text-muted">
+                  <small>
+                    By clicking on the "{PAGES.login.name}" or "Continue with
+                    Google" button, you are acknowledging and accepting our{' '}
+                    <span
+                      class="text-primary clickable"
+                      onClick={() => {
+                        window.open(PAGES.terms_conditions.directory, '_blank');
+                      }}
+                    >
+                      Terms and Conditions.
+                    </span>
+                  </small>
+                </p>
               </form>
               <p class="text-center mt-4">
                 <span>Don't have an account? </span>
@@ -312,8 +343,7 @@ const AuthModal = ({ show, setShow }) => {
                     <span
                       class="text-primary clickable"
                       onClick={() => {
-                        toggleModal('auth');
-                        router.push(PAGES.terms_conditions.directory);
+                        window.open(PAGES.terms_conditions.directory, '_blank');
                       }}
                     >
                       Terms and Conditions.

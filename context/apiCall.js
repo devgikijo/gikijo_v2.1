@@ -1422,6 +1422,22 @@ export const ApiCallProvider = ({ children }) => {
     }
   };
 
+  const loginWithGoogleApi = async () => {
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      return data;
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
   const signUpApi = async ({ username, email, password }) => {
     try {
       const { data, error } = await supabase.auth.signUp({
@@ -1502,6 +1518,7 @@ export const ApiCallProvider = ({ children }) => {
         apiData: mainData,
         clearData,
         loginApi,
+        loginWithGoogleApi,
         signUpApi,
         resetPasswordApi,
         logoutApi,
