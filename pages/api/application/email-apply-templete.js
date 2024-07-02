@@ -12,7 +12,7 @@ const NewApplicantNotification = ({
     <div style={styles.container}>
       <div style={styles.logo}>
         <img
-          src="https://gikijo.com/img/gikijo_logo.png"
+          src="https://www.gikijo.com/images/gikijo-logo.png"
           alt="Gikijo"
           style={styles.logoImage}
         />

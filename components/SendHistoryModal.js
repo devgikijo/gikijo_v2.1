@@ -28,9 +28,10 @@ import { useModal } from '../context/modal';
 import { useRouter } from 'next/router';
 import JobCard from './JobCard';
 import EmptyData from './EmptyData';
+import LoadingSpinner from './LoadingSpinner';
 
 const SendHistoryModal = () => {
-  const { apiData } = useApiCall();
+  const { apiData, retrySendJobPostApi } = useApiCall();
 
   const router = useRouter();
   const { isModalOpen, toggleModal } = useModal();
@@ -65,6 +66,8 @@ const SendHistoryModal = () => {
 
   const filteredJobs = jobData?.job_post_send_que;
 
+  const [isLoading, setIsLoading] = useState({});
+
   return (
     <>
       <Modal show={isModalOpen.sendHistory} onHide={handleClose}>
@@ -82,7 +85,7 @@ const SendHistoryModal = () => {
                 />
               </div>
             ) : (
-              <table class="table table-responsive table-hover">
+              <table class="table table-responsive">
                 <thead>
                   <tr>
                     <th scope="col"></th>
@@ -117,24 +120,7 @@ const SendHistoryModal = () => {
 
                     return (
                       <tr class="align-middle" key={index}>
-                        <td
-                          class="pointer-hover"
-                          onClick={() => {
-                            if (
-                              data.message_url[channelInfo.platform]
-                                .is_result_exist
-                            ) {
-                              window.open(
-                                data.message_url[channelInfo.platform].url,
-                                '_blank'
-                              );
-                            } else {
-                              if (data.channel?.url) {
-                                window.open(data.channel.url, '_blank');
-                              }
-                            }
-                          }}
-                        >
+                        <td>
                           <div class="row">
                             <div class="d-flex col-auto align-items-center">
                               {channelInfo.icon}
@@ -145,8 +131,26 @@ const SendHistoryModal = () => {
                               <br />
                               {data.message_url[channelInfo.platform]
                                 .is_result_exist ? (
-                                <small class="text-primary">
-                                  View in Channel{' '}
+                                <small
+                                  class="text-primary clickable"
+                                  onClick={() => {
+                                    if (
+                                      data.message_url[channelInfo.platform]
+                                        .is_result_exist
+                                    ) {
+                                      window.open(
+                                        data.message_url[channelInfo.platform]
+                                          .url,
+                                        '_blank'
+                                      );
+                                    } else {
+                                      if (data.channel?.url) {
+                                        window.open(data.channel.url, '_blank');
+                                      }
+                                    }
+                                  }}
+                                >
+                                  Open in Channel{' '}
                                   <i class="bi bi-arrow-up-right-circle"></i>
                                 </small>
                               ) : (
@@ -155,10 +159,41 @@ const SendHistoryModal = () => {
                                     {data.paymentStatus}
                                   </small>
                                   <br />
-                                  <small class="text-muted">
+                                  {/* <small class="text-muted">
                                     <i class="bi bi-clock-history me-1"></i>{' '}
                                     Awaiting admin approval
                                   </small>
+                                  <br /> */}
+                                  {isLoading[item.id] ? (
+                                    <LoadingSpinner
+                                      isLoading={true}
+                                      isSmall={true}
+                                    />
+                                  ) : (
+                                    <small
+                                      onClick={async () => {
+                                        setIsLoading({ [item.id]: true });
+                                        const result =
+                                          await retrySendJobPostApi({
+                                            postData: {
+                                              job_post_send_que_id: item.id,
+                                            },
+                                          });
+
+                                        if (result) {
+                                          setValueTempData('selectedItem', {
+                                            ...tempData.selectedItem,
+                                            editJobDetails: result,
+                                          });
+                                        }
+
+                                        setIsLoading({ [item.id]: false });
+                                      }}
+                                      class="text-danger clickable"
+                                    >
+                                      Refresh
+                                    </small>
+                                  )}
                                 </>
                               )}
                             </div>

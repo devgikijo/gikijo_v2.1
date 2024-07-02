@@ -1286,6 +1286,56 @@ export const ApiCallProvider = ({ children }) => {
     }
   };
 
+  const retrySendJobPostApi = async ({ postData }) => {
+    try {
+      const response = await fetch('/api/job-post/retry-send-post', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...postData,
+        }),
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        if (responseData) {
+          if (
+            mainData.jobPost.data.length > 0 &&
+            responseData.data?.job_post_id
+          ) {
+            const editedJob = mainData.jobPost.data.find(
+              (jobs) => jobs.id === responseData.data?.job_post_id
+            );
+
+            if (editedJob?.job_post_send_que?.length > 0) {
+              const editedJobQue = editedJob.job_post_send_que.find(
+                (job_que) => job_que.id === responseData.data.id
+              );
+
+              editedJobQue.payment_complete =
+                responseData.data.payment_complete;
+              editedJobQue.send_result = responseData.data.send_result;
+              editedJobQue.try_send_count = responseData.data.try_send_count;
+
+              return editedJob;
+            }
+          }
+
+          if (responseData?.data?.send_result?.ok) {
+            toast.success('Sent Successfully!');
+          }
+        }
+      } else {
+        const error = await response.json();
+        toast.error(error.message);
+      }
+    } catch (error) {
+      toast.error('An error occurred while processing the request');
+    }
+  };
+
   const promiseAllApi = async () => {
     await Promise.all([
       getProfileApi(),
@@ -1555,6 +1605,7 @@ export const ApiCallProvider = ({ children }) => {
         getApplicationApi,
         createStripeCustomerApi,
         createStripeCheckoutSessionApi,
+        retrySendJobPostApi,
         addJobAlertApi,
       }}
     >
