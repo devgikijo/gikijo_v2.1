@@ -6,8 +6,15 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const handler = async (req, res) => {
   try {
     const supabase = getServiceSupabase();
-    const { customerId, totalPrice, bulkSendQue, bulkToken, user_uuid } =
-      req.body;
+    const {
+      customerId,
+      totalPrice,
+      bulkSendQue,
+      bulkToken,
+      user_uuid,
+      postfixSuccessUrl,
+    } = req.body;
+
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       payment_method_types: ['card'],
@@ -28,7 +35,7 @@ const handler = async (req, res) => {
       //   bulk_send_que: bulkSendQue,
       // },
       mode: 'payment',
-      success_url: `${req.headers.referer}`,
+      success_url: `${req.headers.referer}${postfixSuccessUrl}`,
       cancel_url: `${req.headers.referer}`,
     });
 

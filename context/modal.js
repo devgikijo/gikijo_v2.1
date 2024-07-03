@@ -20,6 +20,7 @@ export const ModalProvider = ({ children }) => {
     editCompanyProfile: false,
     editChannel: false,
     sendHistory: false,
+    orderStatus: false,
   });
 
   const toggleModal = (key) => {
