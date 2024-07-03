@@ -21,7 +21,8 @@ const NewsModal = () => {
   useEffect(() => {
     if (!seenNewsID_01) {
       setTimeout(() => {
-        // toggleModal('news'); // toggle this
+        // toggleModal('news');
+        // toggle this
       }, 500);
     }
   }, []);

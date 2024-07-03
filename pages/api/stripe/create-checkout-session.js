@@ -31,7 +31,7 @@ const handler = async (req, res) => {
       success_url: `${req.headers.referer}`,
       cancel_url: `${req.headers.referer}`,
     });
-    console.log('hihihih');
+
     if (session) {
       let dataToUpdate = {
         provider: 'stripe',

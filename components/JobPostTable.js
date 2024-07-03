@@ -269,7 +269,30 @@ const JobPostTable = () => {
                       <div class="col-lg col-md">
                         <div class="row">
                           <div class="col-lg mt-3 mt-md-0">
-                            <div class="row">
+                            <div class="row text-center">
+                              <div class="col-auto">
+                                <>
+                                  <span
+                                    class={`badge rounded-pill ${data.theme.badge}`}
+                                  >
+                                    <small>
+                                      {data.theme.icon} {data.status}
+                                    </small>
+                                  </span>
+                                  <small
+                                    class="text-primary clickable"
+                                    onClick={data.actionBtnStatus.click}
+                                  >
+                                    <OverlayTrigger
+                                      overlay={
+                                        <Tooltip>Publish/Unpublished</Tooltip>
+                                      }
+                                    >
+                                      <span>{data.actionBtnStatus.icon}</span>
+                                    </OverlayTrigger>
+                                  </small>
+                                </>
+                              </div>
                               <div class="col">
                                 <OverlayTrigger
                                   overlay={<Tooltip>Total Post Views</Tooltip>}
@@ -297,40 +320,17 @@ const JobPostTable = () => {
                                   </span>
                                 </OverlayTrigger>
                               </div>
-                              <div class="col-auto">
-                                <>
-                                  <span
-                                    class={`badge rounded-pill ${data.theme.badge}`}
-                                  >
-                                    <small>
-                                      {data.theme.icon} {data.status}
-                                    </small>
-                                  </span>
-                                  <small
-                                    class="text-primary clickable"
-                                    onClick={data.actionBtnStatus.click}
-                                  >
-                                    <OverlayTrigger
-                                      overlay={
-                                        <Tooltip>Publish/Unpublished</Tooltip>
-                                      }
-                                    >
-                                      <span>{data.actionBtnStatus.icon}</span>
-                                    </OverlayTrigger>
-                                  </small>
-                                </>
-                              </div>
                             </div>
                           </div>
                           <div class="col-lg mt-3 mt-md-0">
-                            <div class="row">
-                              <div class="col">
+                            <div class="row text-center">
+                              <div class="col ">
                                 <span
                                   class={`${data.actionBtn.theme.color} clickable`}
                                   onClick={data.actionBtn.click}
                                 >
                                   <i class="bi bi-send me-1"></i>{' '}
-                                  <small>Channels</small>
+                                  <small>Send</small>
                                 </span>
                               </div>
                               <div class="col">

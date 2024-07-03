@@ -742,6 +742,11 @@ const JobPostModal = () => {
                                 {formatDisplayNumber(item.total_subscribers)}{' '}
                                 subscribers
                               </small>
+                              <i class="bi bi-dot"></i>
+                              <small class="text-muted">
+                                {formatDisplayNumber(item.day_visibility)} days
+                                visible
+                              </small>
                             </div>
                             <p
                               class="card-text text-truncate text-muted"
