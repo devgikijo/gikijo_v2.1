@@ -43,15 +43,13 @@ function JobAlertCard() {
   };
 
   return (
-    <div class="card bg-dark text-white">
+    <div class="card text-white card-job-alert-bg-image">
       <div class="card-body">
-        <h5 class="card-title mb-0" data-lang-key="job_list.get_alert_xxx">
-          Get alert for new jobs
-        </h5>
+        <h3 class="card-title mb-0">Get alert for new jobs</h3>
         <small class="card-text fw-lighter">
           Stay updated on the latest job postings at Gikijo.
         </small>
-        <form onSubmit={onSubmitJobAlert} class="mt-3">
+        <form onSubmit={onSubmitJobAlert} class="mt-3 fw-bold">
           <div class="mb-3">
             <label htmlFor="input-name" class="form-label">
               Name
