@@ -277,7 +277,7 @@ function JobDetails({ isLoading, showBtnExternalPage = true, item = null }) {
                           <Link
                             href={`${PAGES.profile.directory}?type=company&uid=${jobData.companyUid}`}
                             target="_blank"
-                            class="nav-link"
+                            class="nav-link clickable fw-bold"
                           >
                             {jobData.company}
                           </Link>

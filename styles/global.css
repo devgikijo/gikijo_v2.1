@@ -294,6 +294,15 @@
   background-repeat: no-repeat;
 }
 
+
+.card-job-alert-bg-image {
+  background-image: url('/images/pattern-32.svg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+
 .form-control::placeholder {
   color: #999999;
   opacity: 0.7;
