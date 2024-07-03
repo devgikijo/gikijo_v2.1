@@ -29,6 +29,7 @@ import { useRouter } from 'next/router';
 import JobCard from './JobCard';
 import EmptyData from './EmptyData';
 import LoadingSpinner from './LoadingSpinner';
+import Image from 'next/image';
 
 const SendHistoryModal = () => {
   const { apiData, retrySendJobPostApi } = useApiCall();
@@ -79,9 +80,23 @@ const SendHistoryModal = () => {
             {filteredJobs?.length == 0 ? (
               <div class="text-center my-4">
                 <EmptyData
-                  icon={<i class="fs-5 bi bi-clock-history"></i>}
+                  icon={
+                    <Image
+                      src="/images/message-received.svg"
+                      alt="image"
+                      width={0}
+                      height={0}
+                      sizes="100vw"
+                      style={{ width: 100, height: 'auto' }}
+                      class="d-inline-block align-text-top"
+                    />
+                  }
                   title="No History"
-                  description="Your send history will be appeared here."
+                  description={
+                    <div class="text-center">
+                      <p>Your send history will be appeared here.</p>
+                    </div>
+                  }
                 />
               </div>
             ) : (
@@ -103,8 +118,23 @@ const SendHistoryModal = () => {
                         </>
                       ),
                       createdAt: item?.created_at
-                        ? `${moment(item.created_at).fromNow()}`
+                        ? `Send ${moment(item.created_at).fromNow()}`
                         : '',
+                      expiredAt: item?.expired_at ? (
+                        moment(item.expired_at).isBefore(moment()) ? (
+                          <>
+                            <i class="bi bi-hourglass-bottom me-1"></i>Expired{' '}
+                            {moment(item.expired_at).fromNow()}
+                          </>
+                        ) : (
+                          <>
+                            <i class="bi bi-hourglass-split me-1"></i>Expires{' '}
+                            {moment(item.expired_at).fromNow()}
+                          </>
+                        )
+                      ) : (
+                        ''
+                      ),
                       channel: item?.channel,
                       message_url: {
                         telegram: {
@@ -126,33 +156,44 @@ const SendHistoryModal = () => {
                               {channelInfo.icon}
                             </div>
                             <div class="col">
-                              <h6 class="mb-0">{data?.channel.title}</h6>
-                              <small class="text-muted">{data.createdAt}</small>
+                              <h6
+                                class="mb-0 clickable"
+                                onClick={() => {
+                                  if (data.channel?.url) {
+                                    window.open(data.channel.url, '_blank');
+                                  }
+                                }}
+                              >
+                                {data?.channel.title}
+                              </h6>
+                              <small class="text-muted">
+                                <i class="bi bi-send"></i> {data.createdAt}
+                              </small>
                               <br />
                               {data.message_url[channelInfo.platform]
                                 .is_result_exist ? (
-                                <small
-                                  class="text-primary clickable"
-                                  onClick={() => {
-                                    if (
-                                      data.message_url[channelInfo.platform]
-                                        .is_result_exist
-                                    ) {
+                                <>
+                                  {data.expiredAt ? (
+                                    <small class="text-muted me-1">
+                                      {data.expiredAt},
+                                    </small>
+                                  ) : (
+                                    ''
+                                  )}
+                                  <small
+                                    class="text-primary clickable"
+                                    onClick={() => {
                                       window.open(
                                         data.message_url[channelInfo.platform]
                                           .url,
                                         '_blank'
                                       );
-                                    } else {
-                                      if (data.channel?.url) {
-                                        window.open(data.channel.url, '_blank');
-                                      }
-                                    }
-                                  }}
-                                >
-                                  Open in Channel{' '}
-                                  <i class="bi bi-arrow-up-right-circle"></i>
-                                </small>
+                                    }}
+                                  >
+                                    View in Channel{' '}
+                                    <i class="bi bi-arrow-up-right-circle"></i>
+                                  </small>
+                                </>
                               ) : (
                                 <>
                                   <small class="text-muted">
@@ -170,28 +211,34 @@ const SendHistoryModal = () => {
                                       isSmall={true}
                                     />
                                   ) : (
-                                    <small
-                                      onClick={async () => {
-                                        setIsLoading({ [item.id]: true });
-                                        const result =
-                                          await retrySendJobPostApi({
-                                            postData: {
-                                              job_post_send_que_id: item.id,
-                                            },
-                                          });
+                                    <small>
+                                      <small class="text-danger">
+                                        <i class="bi bi-exclamation-circle"></i>{' '}
+                                        Link doest not exist,
+                                      </small>{' '}
+                                      <small
+                                        class="text-primary clickable"
+                                        onClick={async () => {
+                                          setIsLoading({ [item.id]: true });
+                                          const result =
+                                            await retrySendJobPostApi({
+                                              postData: {
+                                                job_post_send_que_id: item.id,
+                                              },
+                                            });
 
-                                        if (result) {
-                                          setValueTempData('selectedItem', {
-                                            ...tempData.selectedItem,
-                                            editJobDetails: result,
-                                          });
-                                        }
+                                          if (result) {
+                                            setValueTempData('selectedItem', {
+                                              ...tempData.selectedItem,
+                                              editJobDetails: result,
+                                            });
+                                          }
 
-                                        setIsLoading({ [item.id]: false });
-                                      }}
-                                      class="text-danger clickable"
-                                    >
-                                      Refresh
+                                          setIsLoading({ [item.id]: false });
+                                        }}
+                                      >
+                                        Click to Resend
+                                      </small>
                                     </small>
                                   )}
                                 </>
