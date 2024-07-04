@@ -36,6 +36,12 @@ const JobPostTable = () => {
         });
       }, 1000);
     }
+
+    if (router.query?.orderStatus == 'true') {
+      setTimeout(() => {
+        toggleModal('orderStatus');
+      }, 1000);
+    }
   }, [router.query]);
 
   return (

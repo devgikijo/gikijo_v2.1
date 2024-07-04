@@ -354,11 +354,22 @@ const JobPostModal = () => {
       if (stripeCustomer?.stripe_customer_id) {
         const stripeHelper = await getStripe();
 
+        var postfixSuccessUrl = '';
+
+        if (router.query) {
+          if (Object.keys(router.query).length === 0) {
+            postfixSuccessUrl = '?orderStatus=true';
+          } else {
+            postfixSuccessUrl = '&orderStatus=true';
+          }
+        }
+
         const stripeCheckoutSession = await createStripeCheckoutSessionApi({
           customerId: stripeCustomer.stripe_customer_id,
           totalPrice: checkTotalPrice(),
           bulkSendQue: selectedItems,
           bulkToken: selectedTokens,
+          postfixSuccessUrl: postfixSuccessUrl,
         });
 
         if (stripeCheckoutSession?.session_id) {
