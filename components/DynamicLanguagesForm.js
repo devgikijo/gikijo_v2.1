@@ -1,7 +1,7 @@
 import React from 'react';
 import { LANGUAGE_LEVELS } from '../utils/constants';
 
-function DynamicLanguagesForm({ arrayElements, setArrayElements }) {
+function DynamicLanguagesForm({ arrayElements, setArrayElements, formConfig }) {
   const handleInputChange = (key, index, event) => {
     const { value } = event.target;
     const updatedElements = { ...arrayElements };
@@ -12,11 +12,7 @@ function DynamicLanguagesForm({ arrayElements, setArrayElements }) {
   const handleAddSection = () => {
     const updatedElements = { ...arrayElements };
 
-    updatedElements.languages.push({
-      name: '',
-      level: '',
-      remarks: '',
-    });
+    updatedElements.languages.push(formConfig.defaultForm);
 
     setArrayElements(updatedElements);
   };
@@ -81,7 +77,7 @@ function DynamicLanguagesForm({ arrayElements, setArrayElements }) {
               className="form-control mt-3"
               value={arrayElements.languages[index].remarks}
               onChange={(e) => handleInputChange('remarks', index, e)}
-              placeholder="Remarks"
+              placeholder="Remarks (optional)"
               rows="3"
             />
           </div>

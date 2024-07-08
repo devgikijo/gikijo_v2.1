@@ -17,7 +17,11 @@ import DynamicSkillsForm from './DynamicSkillsForm';
 import DynamicLanguagesForm from './DynamicLanguagesForm';
 import { useModal } from '../context/modal';
 
-const CompanyProfileForm = ({ section = null, onSuccessFunction = null }) => {
+const CompanyProfileForm = ({
+  section = null,
+  onSuccessFunction = null,
+  buttonTitle = 'Save',
+}) => {
   const { apiData, addCompanyProfileApi } = useApiCall();
   const { isModalOpen, toggleModal } = useModal();
 
@@ -227,7 +231,7 @@ const CompanyProfileForm = ({ section = null, onSuccessFunction = null }) => {
               <GlobalButton
                 btnType="submit"
                 btnClass="btn btn-primary btn-lg"
-                btnTitle="Save Basic Info"
+                btnTitle={buttonTitle}
                 btnLoading={buttonConfig.basicInfo.submit.isLoading}
               />
             </div>
@@ -315,7 +319,7 @@ const CompanyProfileForm = ({ section = null, onSuccessFunction = null }) => {
               <GlobalButton
                 btnType="submit"
                 btnClass="btn btn-primary btn-lg"
-                btnTitle="Save Business Overview"
+                btnTitle={buttonTitle}
                 btnLoading={buttonConfig.businessOverview.submit.isLoading}
               />
             </div>

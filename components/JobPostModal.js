@@ -8,10 +8,10 @@ import {
   formatDisplayNumber,
   generateUniqueID,
   getDisplayValue,
+  getJobSummary,
   getStripe,
   jobCardContent,
 } from '../utils/helper';
-import DynamicSingleForm from './DynamicSingleForm';
 import {
   COMPANY_SIZES,
   COUNTRIES,
@@ -22,6 +22,9 @@ import {
   SHARE_CHANNEL,
   STAGGER_CHILD_VARIANTS,
 } from '../utils/constants';
+import DynamicSingleForm from './DynamicSingleForm';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 import { motion } from 'framer-motion';
 import { useApiCall } from '../context/apiCall';
 import { useTempData } from '../context/tempData';
@@ -176,67 +179,6 @@ const JobPostModal = () => {
     }
   };
 
-  const getJobSummary = (item) => {
-    const jobData = {
-      jobTitle: item?.title,
-      employmentType: EMPLOYMENT_TYPES.find(
-        (type) => type.value === item?.employment_type
-      )?.name,
-      salary: `RM ${item?.min_salary} - ${item?.max_salary} ${
-        SALARY_TYPES.find((type) => type.value === item?.salary_type)?.name
-      }`,
-      requirements: item?.requirements ? item.requirements : [],
-      benefits: item?.benefits ? item.benefits : [],
-      additionalInfo: item?.additional_info ? item.additional_info : '',
-      location: `${getDisplayValue(companyData, 'address_1')}${
-        getDisplayValue(companyData, 'address_2')
-          ? `, ${getDisplayValue(companyData, 'address_2')}`
-          : ''
-      }${
-        getDisplayValue(companyData, 'city')
-          ? `, ${getDisplayValue(companyData, 'city')}`
-          : ''
-      }${
-        getDisplayValue(companyData, 'state')
-          ? `, ${getDisplayValue(companyData, 'state')}`
-          : ''
-      }, ${getDisplayValue(
-        findInArray(COUNTRIES, 'value', companyData?.country),
-        'name',
-        ''
-      )}`,
-      company: companyData?.company_name || '-',
-      size: getDisplayValue(
-        findInArray(COMPANY_SIZES, 'value', companyData?.size),
-        'name',
-        '-'
-      ),
-      registration_number: companyData?.registration_number || '-',
-      industries:
-        Array.isArray(getDisplayValue(companyData, 'industries')) &&
-        getDisplayValue(companyData, 'industries').map(
-          (industry, index) =>
-            INDUSTRIES.find((level) => level.value === industry)?.name ?? '-'
-        ),
-    };
-
-    const summary = `
-    Job Title: ${jobData.jobTitle},
-    Employment Type: ${jobData.employmentType},
-    Requirements: ${jobData.requirements.join(', ') || 'None specified'},
-    Benefits: ${jobData.benefits.join(', ') || 'None specified'},
-    Additional Info: ${jobData.additionalInfo},   
-    Location: ${jobData.location},
-    Salary: ${jobData.salary},
-    Company: ${jobData.company},
-    Size: ${jobData.size},
-    Industries: ${jobData.industries.join(', ')},
-    Registration Number: ${jobData.registration_number}
-    `;
-
-    return summary;
-  };
-
   const onSubmitJobPost = async (event) => {
     event.preventDefault();
 
@@ -260,7 +202,8 @@ const JobPostModal = () => {
       company_profile_id: companyData.id,
     };
 
-    addData.summary = getJobSummary(addData);
+    const summaryData = { ...addData, company_profile: companyData };
+    addData.summary = getJobSummary(summaryData);
 
     if (addData.min_salary == '') {
       addData.min_salary = null;
@@ -499,6 +442,7 @@ const JobPostModal = () => {
       return [];
     }
   };
+
   const viewConfig = {
     create: {
       title: jobData ? 'Edit Post' : 'New Post',
@@ -840,14 +784,28 @@ const JobPostModal = () => {
                               </div>
                               <div class="col">
                                 <h6 class="card-title">
-                                  <span>Token Balance</span>
+                                  Gikijo Token{' '}
+                                  <span class="small">
+                                    <OverlayTrigger
+                                      overlay={
+                                        <Tooltip>
+                                          Use your Gikijo tokens to get
+                                          discounts. Learn more on our terms
+                                          page.
+                                        </Tooltip>
+                                      }
+                                    >
+                                      <i class="bi bi-info-circle"></i>
+                                    </OverlayTrigger>
+                                  </span>
                                 </h6>
                                 <p
                                   class="card-text text-truncate text-muted"
                                   style={{ maxWidth: '250px' }}
                                 >
+                                  Balance:{' '}
                                   {item?.token_amount ? item.token_amount : 0}{' '}
-                                  tokens
+                                  tokens{' '}
                                 </p>
                               </div>
                               <div class="col-auto">

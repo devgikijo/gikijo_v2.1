@@ -22,6 +22,7 @@ const NewsModal = () => {
     if (!seenNewsID_01) {
       setTimeout(() => {
         // toggleModal('news');
+        // toggle this
       }, 500);
     }
   }, []);

@@ -1,13 +1,12 @@
 import { useApiCall } from '../context/apiCall';
 import { useTempData } from '../context/tempData';
-import { COUNTRIES, EMPLOYMENT_TYPES, SALARY_TYPES } from '../utils/constants';
 import toast from 'react-hot-toast';
-import moment from 'moment';
 import { jobCardContent } from '../utils/helper';
 
 const JobCard = ({ item, displayOnly = false, showSettingsInfo = false }) => {
   const { publishJobPostApi } = useApiCall();
   const { tempData, setValueTempData } = useTempData();
+  const isSent = item?.job_post_send_que?.length > 0 ? true : false;
 
   const statusConfig = {
     publish: {
@@ -17,12 +16,12 @@ const JobCard = ({ item, displayOnly = false, showSettingsInfo = false }) => {
         icon: <i class="bi bi-check-circle me-1"></i>,
       },
       infoBox: {
-        theme: 'alert-success',
+        isShow: isSent ? false : true,
+        theme: 'alert-warning',
         content: (
           <span>
-            <i class="bi bi-broadcast me-1"></i> Your post is now live on
-            Gikijo. To reach more people, share it through the suggested
-            channels below.
+            <i class={`bi bi-broadcast me-1 ${!isSent ? `pointer` : ''}`}></i>{' '}
+            Choose any of the channels below to start sending your post.
           </span>
         ),
       },
@@ -34,6 +33,7 @@ const JobCard = ({ item, displayOnly = false, showSettingsInfo = false }) => {
         icon: <i class="bi bi-exclamation-circle me-1"></i>,
       },
       infoBox: {
+        isShow: true,
         theme: 'alert-error',
         content: (
           <span>
@@ -98,7 +98,7 @@ const JobCard = ({ item, displayOnly = false, showSettingsInfo = false }) => {
               </div>
             </div>
             {displayOnly && showSettingsInfo ? (
-              <div class="col-auto ms-auto">
+              <div class="col col-md-auto mt-2 mt-md-0 ms-auto">
                 <span
                   class={`badge rounded-pill ${
                     statusConfig[jobCardContent(item).status]?.theme.badge
@@ -155,14 +155,20 @@ const JobCard = ({ item, displayOnly = false, showSettingsInfo = false }) => {
         {displayOnly ? <span class="transparent-gradient"></span> : ''}
       </div>
       {displayOnly && showSettingsInfo ? (
-        <div
-          class={`alert ${
-            statusConfig[jobCardContent(item).status]?.infoBox.theme
-          } small`}
-          role="alert"
-        >
-          {statusConfig[jobCardContent(item).status]?.infoBox.content}
-        </div>
+        <>
+          {statusConfig[jobCardContent(item).status]?.infoBox.isShow ? (
+            <div
+              class={`alert ${
+                statusConfig[jobCardContent(item).status]?.infoBox.theme
+              } small`}
+              role="alert"
+            >
+              {statusConfig[jobCardContent(item).status]?.infoBox.content}
+            </div>
+          ) : (
+            ''
+          )}
+        </>
       ) : (
         ''
       )}

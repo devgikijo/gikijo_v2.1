@@ -2,7 +2,13 @@ import { useEffect, useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import Cookies from 'js-cookie';
 import moment from 'moment';
-import { COUNTRIES, EMPLOYMENT_TYPES, SALARY_TYPES } from './constants';
+import {
+  COMPANY_SIZES,
+  COUNTRIES,
+  EMPLOYMENT_TYPES,
+  INDUSTRIES,
+  SALARY_TYPES,
+} from './constants';
 
 export const generateUniqueID = () => {
   var timestamp = Date.now();
@@ -81,6 +87,69 @@ export const checkCookie = async (cookieName, expiredTime = 15) => {
   } else {
     return false;
   }
+};
+
+export const getJobSummary = (item) => {
+  const companyData = item?.company_profile;
+
+  const jobData = {
+    jobTitle: item?.title,
+    employmentType: EMPLOYMENT_TYPES.find(
+      (type) => type.value === item?.employment_type
+    )?.name,
+    salary: `RM ${item?.min_salary} - ${item?.max_salary} ${
+      SALARY_TYPES.find((type) => type.value === item?.salary_type)?.name
+    }`,
+    requirements: item?.requirements ? item.requirements : [],
+    benefits: item?.benefits ? item.benefits : [],
+    additionalInfo: item?.additional_info ? item.additional_info : '',
+    location: `${getDisplayValue(companyData, 'address_1')}${
+      getDisplayValue(companyData, 'address_2')
+        ? `, ${getDisplayValue(companyData, 'address_2')}`
+        : ''
+    }${
+      getDisplayValue(companyData, 'city')
+        ? `, ${getDisplayValue(companyData, 'city')}`
+        : ''
+    }${
+      getDisplayValue(companyData, 'state')
+        ? `, ${getDisplayValue(companyData, 'state')}`
+        : ''
+    }, ${getDisplayValue(
+      findInArray(COUNTRIES, 'value', companyData?.country),
+      'name',
+      ''
+    )}`,
+    company: companyData?.company_name || '-',
+    size: getDisplayValue(
+      findInArray(COMPANY_SIZES, 'value', companyData?.size),
+      'name',
+      '-'
+    ),
+    registration_number: companyData?.registration_number || '-',
+    industries:
+      Array.isArray(getDisplayValue(companyData, 'industries')) &&
+      getDisplayValue(companyData, 'industries').map(
+        (industry, index) =>
+          INDUSTRIES.find((level) => level.value === industry)?.name ?? '-'
+      ),
+  };
+
+  const summary = `
+  Job Title: ${jobData.jobTitle},
+  Employment Type: ${jobData.employmentType},
+  Requirements: ${jobData.requirements.join(', ') || 'None specified'},
+  Benefits: ${jobData.benefits.join(', ') || 'None specified'},
+  Additional Info: ${jobData.additionalInfo},   
+  Location: ${jobData.location},
+  Salary: ${jobData.salary},
+  Company: ${jobData.company},
+  Size: ${jobData.size},
+  Industries: ${jobData.industries.join(', ')},
+  Registration Number: ${jobData.registration_number}
+  `;
+
+  return summary;
 };
 
 export const jobCardContent = (item) => {

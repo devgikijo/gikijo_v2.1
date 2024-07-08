@@ -116,7 +116,7 @@ const AuthModal = ({ show, setShow }) => {
             duration: 15000,
           }
         );
-      }, 2000);
+      }, 1000);
     }
 
     setButtonConfig({
@@ -212,7 +212,7 @@ const AuthModal = ({ show, setShow }) => {
               <form onSubmit={onSubmitLogin}>
                 <div class="mb-3">
                   <label htmlFor="input-login-email" class="form-label">
-                    Username
+                    Email
                   </label>
                   <input
                     type="email"

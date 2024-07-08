@@ -14,7 +14,11 @@ import DynamicSkillsForm from './DynamicSkillsForm';
 import DynamicLanguagesForm from './DynamicLanguagesForm';
 import { useModal } from '../context/modal';
 
-const ResumeForm = ({ section = null, onSuccessFunction = null }) => {
+const ResumeForm = ({
+  section = null,
+  onSuccessFunction = null,
+  buttonTitle = 'Save',
+}) => {
   const { apiData, addResumeApi } = useApiCall();
   const { isModalOpen, toggleModal } = useModal();
 
@@ -85,6 +89,40 @@ const ResumeForm = ({ section = null, onSuccessFunction = null }) => {
     },
   });
 
+  const formConfig = {
+    workExperience: {
+      defaultForm: {
+        company_name: '',
+        job_title: '',
+        responsibilities: '',
+        start_date: '',
+        end_date: '',
+      },
+    },
+    educationBackground: {
+      defaultForm: {
+        institution_name: '',
+        field_of_study: '',
+        start_date: '',
+        end_date: '',
+      },
+    },
+    skills: {
+      defaultForm: {
+        name: '',
+        level: '',
+        remarks: '',
+      },
+    },
+    languages: {
+      defaultForm: {
+        name: '',
+        level: '',
+        remarks: '',
+      },
+    },
+  };
+
   useEffect(() => {
     if (apiData.resume.data?.length !== 0) {
       const resumeData = apiData.resume.data;
@@ -98,10 +136,22 @@ const ResumeForm = ({ section = null, onSuccessFunction = null }) => {
       setFormValue(updatedFormValue);
       setArrayElements((prevState) => ({
         ...prevState,
-        workExperience: resumeData?.work_experience || [],
-        educationBackground: resumeData?.education_background || [],
-        skills: resumeData?.skills || [],
-        languages: resumeData?.languages || [],
+        workExperience:
+          resumeData?.work_experience?.length > 0
+            ? resumeData.work_experience
+            : [],
+        educationBackground:
+          resumeData?.education_background?.length > 0
+            ? resumeData?.education_background
+            : [formConfig.educationBackground.defaultForm],
+        skills:
+          resumeData?.skills?.length > 0
+            ? resumeData?.skills
+            : [formConfig.skills.defaultForm],
+        languages:
+          resumeData?.languages?.length > 0
+            ? resumeData.languages
+            : [formConfig.languages.defaultForm],
       }));
     }
   }, [apiData.resume?.data]);
@@ -323,7 +373,7 @@ const ResumeForm = ({ section = null, onSuccessFunction = null }) => {
               <GlobalButton
                 btnType="submit"
                 btnClass="btn btn-primary btn-lg"
-                btnTitle="Save Personal Info"
+                btnTitle={buttonTitle}
                 btnLoading={buttonConfig.profile.submit.isLoading}
               />
             </div>
@@ -442,7 +492,7 @@ const ResumeForm = ({ section = null, onSuccessFunction = null }) => {
               <GlobalButton
                 btnType="submit"
                 btnClass="btn btn-primary btn-lg"
-                btnTitle="Save Job Details"
+                btnTitle={buttonTitle}
                 btnLoading={buttonConfig.job.submit.isLoading}
               />
             </div>
@@ -465,12 +515,13 @@ const ResumeForm = ({ section = null, onSuccessFunction = null }) => {
             <DynamicWorkExperienceForm
               arrayElements={arrayElements}
               setArrayElements={setArrayElements}
+              formConfig={formConfig.workExperience}
             />
             <div class="d-flex justify-content-end">
               <GlobalButton
                 btnType="submit"
                 btnClass="btn btn-primary btn-lg"
-                btnTitle="Save Work Experience"
+                btnTitle={buttonTitle}
                 btnLoading={buttonConfig.workExperience.submit.isLoading}
               />
             </div>
@@ -493,12 +544,13 @@ const ResumeForm = ({ section = null, onSuccessFunction = null }) => {
             <DynamicEducationBackgroundForm
               arrayElements={arrayElements}
               setArrayElements={setArrayElements}
+              formConfig={formConfig.educationBackground}
             />
             <div class="d-flex justify-content-end">
               <GlobalButton
                 btnType="submit"
                 btnClass="btn btn-primary btn-lg"
-                btnTitle="Save Education History"
+                btnTitle={buttonTitle}
                 btnLoading={buttonConfig.educationHistory.submit.isLoading}
               />
             </div>
@@ -521,12 +573,13 @@ const ResumeForm = ({ section = null, onSuccessFunction = null }) => {
             <DynamicSkillsForm
               arrayElements={arrayElements}
               setArrayElements={setArrayElements}
+              formConfig={formConfig.skills}
             />
             <div class="d-flex justify-content-end">
               <GlobalButton
                 btnType="submit"
                 btnClass="btn btn-primary btn-lg"
-                btnTitle="Save Skills"
+                btnTitle={buttonTitle}
                 btnLoading={buttonConfig.skills.submit.isLoading}
               />
             </div>
@@ -549,12 +602,13 @@ const ResumeForm = ({ section = null, onSuccessFunction = null }) => {
             <DynamicLanguagesForm
               arrayElements={arrayElements}
               setArrayElements={setArrayElements}
+              formConfig={formConfig.languages}
             />
             <div class="d-flex justify-content-end">
               <GlobalButton
                 btnType="submit"
                 btnClass="btn btn-primary btn-lg"
-                btnTitle="Save Languages"
+                btnTitle={buttonTitle}
                 btnLoading={buttonConfig.languages.submit.isLoading}
               />
             </div>

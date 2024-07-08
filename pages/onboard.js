@@ -44,7 +44,7 @@ const main = () => {
 
   const mainAccessConfig = {
     employer: {
-      title: 'I want to find a job',
+      title: 'Find Job',
       onClick: async () => {
         try {
           const result = await updateAccountTypeApi({
@@ -79,7 +79,7 @@ const main = () => {
       ),
     },
     jobSeeker: {
-      title: 'I want to post a job',
+      title: 'Post Job',
       onClick: async () => {
         const result = await updateAccountTypeApi({
           postData: {
@@ -166,6 +166,7 @@ const main = () => {
                     onSuccessFunction={() => {
                       setStep(nextSection);
                     }}
+                    buttonTitle="Next"
                   />
                 ) : (
                   ''
@@ -176,6 +177,7 @@ const main = () => {
                     onSuccessFunction={() => {
                       setStep(nextSection);
                     }}
+                    buttonTitle="Next"
                   />
                 ) : (
                   ''
@@ -206,9 +208,9 @@ const main = () => {
                       <div class="card card-move hover-click">
                         <div class="card-body row">
                           <div class="col text-center">{config.icon}</div>
-                          <h5 class="card-title font-weight-bold mt-3">
+                          <h4 class="card-title font-weight-bold mt-3">
                             {config.title}
-                          </h5>
+                          </h4>
                         </div>
                       </div>
                     </div>

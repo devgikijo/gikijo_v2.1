@@ -1,6 +1,10 @@
 import React from 'react';
 
-function DynamicWorkExperienceForm({ arrayElements, setArrayElements }) {
+function DynamicWorkExperienceForm({
+  arrayElements,
+  setArrayElements,
+  formConfig,
+}) {
   const handleInputChange = (key, index, event) => {
     const { value } = event.target;
     const updatedElements = { ...arrayElements };
@@ -11,13 +15,7 @@ function DynamicWorkExperienceForm({ arrayElements, setArrayElements }) {
   const handleAddSection = () => {
     const updatedElements = { ...arrayElements };
 
-    updatedElements.workExperience.push({
-      company_name: '',
-      job_title: '',
-      responsibilities: '',
-      start_date: '',
-      end_date: '',
-    });
+    updatedElements.workExperience.push(formConfig.defaultForm);
 
     setArrayElements(updatedElements);
   };
@@ -38,14 +36,14 @@ function DynamicWorkExperienceForm({ arrayElements, setArrayElements }) {
               <div class="col">
                 <label className="form-label">{index + 1}.</label>
               </div>
-              {index !== 0 && (
-                <div class="col text-end">
-                  <i
-                    class="bi bi-trash text-danger clickable"
-                    onClick={() => handleDeleteSection(index)}
-                  ></i>
-                </div>
-              )}
+              {/* {index !== 0 && ( */}
+              <div class="col text-end">
+                <i
+                  class="bi bi-trash text-danger clickable"
+                  onClick={() => handleDeleteSection(index)}
+                ></i>
+              </div>
+              {/* )} */}
             </div>
             <input
               type="text"

@@ -34,7 +34,7 @@ export default async function handler(req, res) {
       .eq('user_uuid', applicationData?.applicant?.applicant_uuid)
       .single();
 
-    const jobInfo = applicationData?.jobData;
+    const jobInfo = applicationData?.jobPost;
 
     let newStatus = null;
     newStatus = APPLICATION_STATUS.find(

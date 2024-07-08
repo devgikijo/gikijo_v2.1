@@ -1,7 +1,7 @@
 import React from 'react';
 import { SKILL_LEVELS } from '../utils/constants';
 
-function DynamicSkillsForm({ arrayElements, setArrayElements }) {
+function DynamicSkillsForm({ arrayElements, setArrayElements, formConfig }) {
   const handleInputChange = (key, index, event) => {
     const { value } = event.target;
     const updatedElements = { ...arrayElements };
@@ -12,11 +12,7 @@ function DynamicSkillsForm({ arrayElements, setArrayElements }) {
   const handleAddSection = () => {
     const updatedElements = { ...arrayElements };
 
-    updatedElements.skills.push({
-      name: '',
-      level: '',
-      remarks: '',
-    });
+    updatedElements.skills.push(formConfig.defaultForm);
 
     setArrayElements(updatedElements);
   };
@@ -81,7 +77,7 @@ function DynamicSkillsForm({ arrayElements, setArrayElements }) {
               className="form-control mt-3"
               value={arrayElements.skills[index].remarks}
               onChange={(e) => handleInputChange('remarks', index, e)}
-              placeholder="Remarks"
+              placeholder="Remarks (optional)"
               rows="3"
             />
           </div>

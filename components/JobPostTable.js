@@ -130,6 +130,7 @@ const JobPostTable = () => {
                   item?.job_post_validity?.published_channel?.length;
 
                 const data = {
+                  id: item.id,
                   title: item.title,
                   employmentType: EMPLOYMENT_TYPES.find(
                     (type) => type.value === item.employment_type
@@ -148,6 +149,7 @@ const JobPostTable = () => {
                   shareCount: formatDisplayNumber(
                     job_post_validity?.share_count
                   ),
+                  isSent: item?.job_post_send_que?.length > 0 ? true : false,
                   applicationCount: item.application?.length,
                   actionBtnApplicant: {
                     click: async () => {
@@ -330,14 +332,24 @@ const JobPostTable = () => {
                           </div>
                           <div class="col-lg mt-3 mt-md-0">
                             <div class="row text-center">
-                              <div class="col ">
-                                <span
-                                  class={`${data.actionBtn.theme.color} clickable`}
-                                  onClick={data.actionBtn.click}
-                                >
-                                  <i class="bi bi-send me-1"></i>{' '}
-                                  <small>Send</small>
-                                </span>
+                              <div class="col">
+                                <div class="col-auto">
+                                  <span
+                                    class={`${data.actionBtn.theme.color} clickable`}
+                                    onClick={data.actionBtn.click}
+                                  >
+                                    <i
+                                      class={`bi bi-send me-1 ${
+                                        data.isSent == false &&
+                                        tempData.selectedItem.editJobDetails
+                                          ?.id !== data.id
+                                          ? 'pointer'
+                                          : ''
+                                      }`}
+                                    ></i>
+                                    <small>Send</small>
+                                  </span>
+                                </div>
                               </div>
                               <div class="col">
                                 <span
