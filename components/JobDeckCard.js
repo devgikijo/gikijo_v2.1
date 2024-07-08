@@ -8,7 +8,7 @@ import { useTempData } from '../context/tempData';
 import { useApiCall } from '../context/apiCall';
 import AnimatedComponent from './AnimatedComponent';
 
-function JobDeckCard() {
+function JobDeckCard({ showSeeMore = true }) {
   const { apiData } = useApiCall();
   const { isModalOpen, toggleModal } = useModal();
   const { tempData, setValueTempData } = useTempData();
@@ -48,11 +48,15 @@ function JobDeckCard() {
           </div>
         )}
       </div>
-      <Link href={`${PAGES.jobs.directory}`} class="nav-link">
-        <h6 class="text-primary text-end" data-lang-key="global.see_more">
-          See More <i class="bi bi-arrow-right-short"></i>
-        </h6>
-      </Link>
+      {showSeeMore ? (
+        <Link href={`${PAGES.jobs.directory}`} class="nav-link">
+          <h6 class="text-primary text-end" data-lang-key="global.see_more">
+            See More <i class="bi bi-arrow-right-short"></i>
+          </h6>
+        </Link>
+      ) : (
+        ''
+      )}
     </>
   );
 }

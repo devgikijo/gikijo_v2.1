@@ -7,7 +7,7 @@ import JobDeckCard from '../components/JobDeckCard';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import JobDetails from '../components/JobDetails';
 import GlobalButton from '../components/GlobalButton';
-import { PAGES, STAGGER_CHILD_VARIANTS } from '../utils/constants';
+import { PAGES } from '../utils/constants';
 import { useModal } from '../context/modal';
 import JobPostTable from '../components/JobPostTable';
 import CompanyProfileTable from '../components/CompanyProfileTable';
@@ -17,6 +17,7 @@ import JobPostModal from '../components/JobPostModal';
 import Image from 'next/image';
 import JobCard from '../components/JobCard';
 import JobFilter from '../components/JobFilter';
+import AnimatedComponent from '../components/AnimatedComponent';
 
 const main = () => {
   const {
@@ -141,55 +142,46 @@ const main = () => {
     type,
   }) => (
     <div>
-      <motion.h6 variants={STAGGER_CHILD_VARIANTS} class="mb-0 text-primary">
-        {steps}
-      </motion.h6>
-      <motion.h1 variants={STAGGER_CHILD_VARIANTS} class="mb-0">
-        {title}
-      </motion.h1>
-      <motion.p variants={STAGGER_CHILD_VARIANTS} class="lead text-muted">
-        {subtitle}
-      </motion.p>
-      <motion.div
-        variants={STAGGER_CHILD_VARIANTS}
-        class="text-muted text-start"
-      >
-        {customBody ? (
-          customBody
-        ) : (
-          <>
-            <div class="card">
-              <div class="card-body">
-                {type == 'jobSeeker' ? (
-                  <ResumeForm
-                    section={section}
-                    onSuccessFunction={() => {
-                      setStep(nextSection);
-                    }}
-                    buttonTitle="Next"
-                  />
-                ) : (
-                  ''
-                )}
-                {type == 'employer' ? (
-                  <CompanyProfileForm
-                    section={section}
-                    onSuccessFunction={() => {
-                      setStep(nextSection);
-                    }}
-                    buttonTitle="Next"
-                  />
-                ) : (
-                  ''
-                )}
+      <AnimatedComponent key={1}>
+        <h6 class="mb-0 text-primary">{steps}</h6>
+        <h1 class="mb-0">{title}</h1>
+        <p class="lead text-muted">{subtitle}</p>
+        <div class="text-muted text-start">
+          {customBody ? (
+            customBody
+          ) : (
+            <>
+              <div class="card">
+                <div class="card-body">
+                  {type == 'jobSeeker' ? (
+                    <ResumeForm
+                      section={section}
+                      onSuccessFunction={() => {
+                        setStep(nextSection);
+                      }}
+                      buttonTitle="Next"
+                    />
+                  ) : (
+                    ''
+                  )}
+                  {type == 'employer' ? (
+                    <CompanyProfileForm
+                      section={section}
+                      onSuccessFunction={() => {
+                        setStep(nextSection);
+                      }}
+                      buttonTitle="Next"
+                    />
+                  ) : (
+                    ''
+                  )}
+                </div>
               </div>
-            </div>
-          </>
-        )}
-      </motion.div>
-      <motion.h1 variants={STAGGER_CHILD_VARIANTS}>
-        {navigationSection(prevSection, nextSection)}
-      </motion.h1>
+            </>
+          )}
+        </div>
+        <h1>{navigationSection(prevSection, nextSection)}</h1>
+      </AnimatedComponent>
     </div>
   );
 
@@ -201,22 +193,20 @@ const main = () => {
           subtitle="What would you like to do?"
           customBody={
             <div class="text-center">
-              <motion.div variants={STAGGER_CHILD_VARIANTS} class="mt-4">
-                <div class="row row-cols-1 row-cols-md-2 g-4">
-                  {Object.values(mainAccessConfig).map((config, index) => (
-                    <div class="col" onClick={config.onClick} key={index}>
-                      <div class="card card-move hover-click">
-                        <div class="card-body row">
-                          <div class="col text-center">{config.icon}</div>
-                          <h4 class="card-title font-weight-bold mt-3">
-                            {config.title}
-                          </h4>
-                        </div>
+              <div class="row row-cols-1 row-cols-md-2 g-4">
+                {Object.values(mainAccessConfig).map((config, index) => (
+                  <div class="col" onClick={config.onClick} key={index}>
+                    <div class="card card-move hover-click">
+                      <div class="card-body row">
+                        <div class="col text-center">{config.icon}</div>
+                        <h4 class="card-title font-weight-bold mt-3">
+                          {config.title}
+                        </h4>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </motion.div>
+                  </div>
+                ))}
+              </div>
             </div>
           }
           steps="WELCOME!"
@@ -316,18 +306,16 @@ const main = () => {
           subtitle="You've finished setting up your company profile."
           customBody={
             <div class="text-center">
-              <motion.h1 variants={STAGGER_CHILD_VARIANTS} class="mt-4">
-                <Image
-                  src="/images/approval-5.svg"
-                  alt="image"
-                  width={0}
-                  height={0}
-                  sizes="100vw"
-                  style={{ width: 150, height: 'auto' }}
-                  class="d-inline-block align-text-top"
-                />
-              </motion.h1>
-              <motion.div variants={STAGGER_CHILD_VARIANTS} class="mt-4">
+              <Image
+                src="/images/approval-5.svg"
+                alt="image"
+                width={0}
+                height={0}
+                sizes="100vw"
+                style={{ width: 150, height: 'auto' }}
+                class="d-inline-block align-text-top mt-4"
+              />
+              <div class="mt-4">
                 <GlobalButton
                   btnType="button"
                   btnClass="btn btn-primary btn-lg"
@@ -349,7 +337,7 @@ const main = () => {
                 >
                   View Company Profile <i class="bi bi-arrow-right-short"></i>
                 </GlobalButton>
-              </motion.div>
+              </div>
             </div>
           }
           prevSection="createJobPost"
@@ -443,20 +431,18 @@ const main = () => {
           subtitle="Start Applying or Check Your Profile"
           customBody={
             <div>
-              <motion.div variants={STAGGER_CHILD_VARIANTS}>
-                <JobDeckCard />
-                <div class="text-center">
-                  <GlobalButton
-                    btnType="button"
-                    btnClass="btn btn-primary btn-lg"
-                    btnOnClick={() => {
-                      setStep('completedJobSeeker');
-                    }}
-                  >
-                    Skip for now <i class="bi bi-arrow-right-short"></i>
-                  </GlobalButton>
-                </div>
-              </motion.div>
+              <JobDeckCard showSeeMore={false} />
+              <div class="text-center">
+                <GlobalButton
+                  btnType="button"
+                  btnClass="btn btn-primary btn-lg"
+                  btnOnClick={() => {
+                    setStep('completedJobSeeker');
+                  }}
+                >
+                  Skip for now <i class="bi bi-arrow-right-short"></i>
+                </GlobalButton>
+              </div>
             </div>
           }
           prevSection="languages"
@@ -473,18 +459,16 @@ const main = () => {
           subtitle="You've finished setting up your profile."
           customBody={
             <div class="text-center">
-              <motion.h1 variants={STAGGER_CHILD_VARIANTS} class="mt-4">
-                <Image
-                  src="/images/approval-5.svg"
-                  alt="image"
-                  width={0}
-                  height={0}
-                  sizes="100vw"
-                  style={{ width: 150, height: 'auto' }}
-                  class="d-inline-block align-text-top"
-                />
-              </motion.h1>
-              <motion.div variants={STAGGER_CHILD_VARIANTS} class="mt-4">
+              <Image
+                src="/images/approval-5.svg"
+                alt="image"
+                width={0}
+                height={0}
+                sizes="100vw"
+                style={{ width: 150, height: 'auto' }}
+                class="d-inline-block align-text-top mt-4"
+              />
+              <div class="mt-4">
                 <GlobalButton
                   btnType="button"
                   btnClass="btn btn-primary btn-lg"
@@ -506,7 +490,7 @@ const main = () => {
                 >
                   View Profile <i class="bi bi-arrow-right-short"></i>
                 </GlobalButton>
-              </motion.div>
+              </div>
             </div>
           }
           prevSection="applyJob"
@@ -563,26 +547,7 @@ const main = () => {
   return (
     <div className="body">
       <section class="container text-center">
-        <motion.div
-          className="z-10"
-          exit={{ opacity: 0, scale: 0.95 }}
-          transition={{ duration: 0.3, type: 'spring' }}
-          key={currentSection}
-        >
-          <motion.div
-            variants={{
-              show: {
-                transition: {
-                  staggerChildren: 0.2,
-                },
-              },
-            }}
-            initial="hidden"
-            animate="show"
-          >
-            {viewConfig[currentSection]?.view}
-          </motion.div>
-        </motion.div>
+        {viewConfig[currentSection]?.view}
         <Offcanvas
           show={isModalOpen.jobDetails}
           onHide={() => {

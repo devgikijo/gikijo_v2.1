@@ -13,6 +13,7 @@ import JobFilter from '../components/JobFilter';
 import JobTypeBadge from '../components/JobTypeBadge';
 import { useModal } from '../context/modal';
 import Image from 'next/image';
+import toast from 'react-hot-toast';
 
 const Index = () => {
   const { apiData } = useApiCall();
@@ -44,7 +45,12 @@ const Index = () => {
       title: 'Post Job',
       onClick: () => {
         if (logedIn) {
-          router.push(PAGES.job_post.directory);
+          if (apiData.profile.data?.account_type === 'employer') {
+            router.push(PAGES.job_post.directory);
+          }
+          if (apiData.profile.data?.account_type === 'job_seeker') {
+            toast.error('Oops! only employers are allowed to post jobs.');
+          }
         } else {
           toggleModal('auth');
         }

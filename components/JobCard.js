@@ -38,8 +38,7 @@ const JobCard = ({ item, displayOnly = false, showSettingsInfo = false }) => {
         content: (
           <span>
             <i class="bi bi-exclamation-circle me-1"></i> Your post is now ready
-            to be published on Gikijo. Publish it today and send it on our
-            suggested channels.{' '}
+            to be published on Gikijo.{' '}
             <strong
               class="clickable text-primary"
               onClick={async () => {

@@ -1150,6 +1150,7 @@ export const ApiCallProvider = ({ children }) => {
       let query = supabase
         .from('company_profile')
         .select('*, job_post (*)')
+        .eq('company_visibility', 'public')
         .order('id', { ascending: false });
 
       if (limit) {
@@ -1157,7 +1158,7 @@ export const ApiCallProvider = ({ children }) => {
       }
 
       const { data, error } = await query;
-
+      console.log('query', data);
       if (error) {
         throw error;
       }

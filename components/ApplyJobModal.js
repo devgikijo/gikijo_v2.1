@@ -144,7 +144,7 @@ const ApplyJobModal = () => {
             </div> */}
             <div class="col mb-3">
               <label htmlFor="input-applicant-remarks" class="form-label">
-                Profile
+                From
               </label>
               <div class="card clickable">
                 <div class="card-body py-2">
@@ -179,7 +179,7 @@ const ApplyJobModal = () => {
                 id="input-applicant-remarks"
                 rows="3"
                 maxLength={300}
-                placeholder="What makes you the best candidate for this position?"
+                placeholder="Share why you're interested in this position.."
               />
             </div>
           </div>
