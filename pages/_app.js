@@ -25,6 +25,7 @@ export default function MyApp({ Component, pageProps }) {
     if (typeof window !== 'undefined') {
       import('bootstrap/dist/js/bootstrap.min.js');
     }
+    // test
   }, []);
 
   return (
