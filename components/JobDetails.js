@@ -232,9 +232,9 @@ function JobDetails({ isLoading, showBtnExternalPage = true, item = null }) {
                       <div class="mb-0">{jobData.salary}</div>
                     </li>
                     <li class="mb-3">
-                      <label class="small text-muted">Requirements</label>
+                      <label class="small text-muted">Benefits</label>
                       <div class="mb-0">
-                        {jobData.requirements.map((selectedJob, index) => {
+                        {jobData.benefits.map((selectedJob, index) => {
                           return (
                             <li key={index}>
                               <span style={{ marginRight: '0.5rem' }}>
@@ -247,9 +247,9 @@ function JobDetails({ isLoading, showBtnExternalPage = true, item = null }) {
                       </div>
                     </li>
                     <li class="mb-3">
-                      <label class="small text-muted">Benefits</label>
+                      <label class="small text-muted">Requirements</label>
                       <div class="mb-0">
-                        {jobData.benefits.map((selectedJob, index) => {
+                        {jobData.requirements.map((selectedJob, index) => {
                           return (
                             <li key={index}>
                               <span style={{ marginRight: '0.5rem' }}>

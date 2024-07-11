@@ -903,7 +903,7 @@ export const ApiCallProvider = ({ children }) => {
         .from('job_post')
         .select('*, job_post_validity!inner(*), company_profile (*)')
         .eq('job_post_validity.is_published', true)
-        .order('id', { ascending: false });
+        .order('created_at', { ascending: false });
 
       if (limit) {
         query = query.limit(limit);
@@ -953,7 +953,7 @@ export const ApiCallProvider = ({ children }) => {
         .select('*, job_post_validity!inner(*), company_profile (*)')
         .eq('job_post_validity.is_published', true)
         .range(from, to)
-        .order('id', { ascending: false });
+        .order('created_at', { ascending: false });
 
       if (jobFilter?.keyword) {
         query = query.textSearch('summary', jobFilter.keyword, {
@@ -1151,6 +1151,7 @@ export const ApiCallProvider = ({ children }) => {
         .from('company_profile')
         .select('*, job_post (*)')
         .eq('company_visibility', 'public')
+        .not('about_us', 'eq', '')
         .order('id', { ascending: false });
 
       if (limit) {
@@ -1158,7 +1159,7 @@ export const ApiCallProvider = ({ children }) => {
       }
 
       const { data, error } = await query;
-      console.log('query', data);
+
       if (error) {
         throw error;
       }

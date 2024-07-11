@@ -70,57 +70,70 @@ const main = () => {
     }
   };
 
+  const othersProfile = () => {
+    const { uid, type } = router.query;
+    if (type === 'resume') {
+      getResumeDetails(uid);
+    } else if (type === 'company') {
+      getCompanyDetails(uid);
+    } else {
+      setMainData((prevData) => ({
+        ...prevData,
+        profileDetails: {
+          data: null,
+          isLoading: false,
+        },
+      }));
+    }
+  };
+
+  const myProfile = () => {
+    const { profile, companyProfile, resume } = apiData;
+
+    if (profile.data?.account_type && profile.data?.onboarding == true) {
+      const accountType = profile.data.account_type;
+
+      if (accountType === 'job_seeker' && resume.data?.uid) {
+        getResumeDetails(resume.data.uid);
+      } else if (accountType === 'employer' && companyProfile.data?.uid) {
+        getCompanyDetails(companyProfile.data.uid);
+      }
+    } else if (profile.data?.onboarding == false) {
+      router.push(PAGES.onboard.directory);
+    }
+  };
+
+  const [profileLoaded, setProfileLoaded] = useState(false);
+
   const profileCondition = () => {
-    if (apiData.user.isLoading == false) {
-      const { uid, type } = router.query;
+    const { uid, type } = router.query;
 
-      if (uid && type) {
-        if (type === 'resume') {
-          getResumeDetails(uid);
-        } else if (type === 'company') {
-          getCompanyDetails(uid);
-        } else {
-          setMainData((prevData) => ({
-            ...prevData,
-            profileDetails: {
-              data: null,
-              isLoading: false,
-            },
-          }));
-        }
-      } else {
-        const { profile, companyProfile, resume } = apiData;
-
-        if (profile.data?.account_type && profile.data?.onboarding == true) {
-          const accountType = profile.data.account_type;
-
-          if (accountType === 'job_seeker' && resume.data?.uid) {
-            getResumeDetails(resume.data.uid);
-          } else if (accountType === 'employer' && companyProfile.data?.uid) {
-            getCompanyDetails(companyProfile.data.uid);
-          }
-        } else if (profile.data?.onboarding == false) {
-          router.push(PAGES.onboard.directory);
-        }
+    if (uid && type && !profileLoaded) {
+      setProfileLoaded(true);
+      othersProfile();
+    } else {
+      if (
+        !apiData.user.isLoading &&
+        !apiData.profile.isLoading &&
+        !apiData.resume.isLoading &&
+        !apiData.companyProfile.isLoading &&
+        !profileLoaded
+      ) {
+        setProfileLoaded(true);
+        myProfile();
       }
     }
   };
 
   useEffect(() => {
-    if (
-      router.query &&
-      !apiData.user.isLoading &&
-      !apiData.profile.isLoading &&
-      !apiData.resume.isLoading &&
-      !apiData.companyProfile.isLoading
-    )
-      profileCondition();
+    profileCondition();
   }, [
     router.query,
     apiData.user.isLoading,
     apiData.profile.isLoading,
     apiData.resume.isLoading,
     apiData.companyProfile.isLoading,
+    profileLoaded,
   ]);
 
   const viewConfig = {

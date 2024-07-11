@@ -15,6 +15,18 @@ const handler = async (req, res) => {
       postfixSuccessUrl,
     } = req.body;
 
+    if (bulkSendQue.length == 0) {
+      return res
+        .status(400)
+        .json({ error: 'Please choose a channel to continue.' });
+    }
+
+    if (totalPrice < 0) {
+      return res
+        .status(400)
+        .json({ error: 'The price must be zero or higher' });
+    }
+
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       payment_method_types: ['card'],

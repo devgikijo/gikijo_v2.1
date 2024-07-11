@@ -279,6 +279,11 @@ const JobPostModal = () => {
       return;
     }
 
+    if (checkTotalPrice() < 0) {
+      toast.error('The price must be zero or higher.');
+      return;
+    }
+
     setButtonConfig((prevConfig) => ({
       ...prevConfig,
       share: {

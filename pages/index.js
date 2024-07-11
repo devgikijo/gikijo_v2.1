@@ -108,7 +108,7 @@ const Index = () => {
           <JobTypeBadge />
           <h5>Latest Jobs</h5>
           <JobDeckCard />
-          <h5>Latest Companies</h5>
+          <h5>Featured Companies</h5>
           <CompanyDeckCard
             isLoading={apiData.topCompanyProfile?.isLoading}
             isEmpty={

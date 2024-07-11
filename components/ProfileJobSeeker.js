@@ -324,7 +324,7 @@ function ProfileJobSeeker({ isLoading, isEmpty, item, onSuccessFunction }) {
 
   return (
     <div class="row">
-      {apiData.profile.data?.profile_tour === false && (
+      {checkIsOwnerResume() && apiData.profile.data?.profile_tour === false && (
         <Joyride
           steps={tourConfig.steps}
           continuous={true}

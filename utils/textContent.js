@@ -76,6 +76,20 @@ export const TERMS_CONDITIONS = [
             <b>Service</b> refers to the Website.
           </li>
           <li>
+            <b>Token</b> refers to virtual currency that can be earned or
+            obtained through our Platform until June 19, 2024.
+          </li>
+          <li>
+            <b>ViewUnlock</b> refers to a method previously used for job
+            postings where employers could publish a job post and later unlock
+            selected applicants' profiles to view additional information.
+          </li>
+          <li>
+            <b>DirectView</b> refers to a method previously used for job
+            postings where employers could publish a job post and gain immediate
+            access to applicants' profiles upon application.
+          </li>
+          <li>
             <b>Terms and Conditions</b> (also referred as "Terms" or "Terms of
             Use") mean these Terms and Conditions that form the entire agreement
             between You and the Company regarding the use of the Service.
@@ -417,6 +431,93 @@ export const TERMS_CONDITIONS = [
           any way for any content, including any errors or omissions in any
           content, or any loss or damage of any kind incurred as a result of
           your use of any content.
+        </p>
+      </div>
+    ),
+  },
+  {
+    id: 'posting_methods',
+    title: 'Posting Methods',
+    content: (
+      <div>
+        <p>
+          Effective June 19, 2024, The Company will discontinue support for the
+          ViewUnlock and DirectView posting methods for job listings. Instead,
+          all job postings will be consolidated into a unified category to
+          ensure consistency and clarity across our platform.
+        </p>
+        <p>
+          Consequently, starting June 19, 2024, all job postings receiving
+          applications will no longer require unlocking applicant profiles. This
+          update aims to streamline the hiring process and enhance user
+          experience.
+        </p>
+      </div>
+    ),
+  },
+  {
+    id: 'token_usage',
+    title: 'Token Usage',
+    content: (
+      <div>
+        <p>
+          Effective June 19, 2024, the purchase of Token will be discontinued.
+          However, Token currently held can continue to be used as usual. Token
+          may be applied as a discount to the total cost of sending job postings
+          to send channels.
+        </p>
+        <p>
+          The availability, pricing, and features associated with Token may vary
+          and are subject to change without notice. The Company reserves the
+          right to modify or discontinue Token or any aspect of their usage at
+          any time.
+        </p>
+        <p>
+          The Company may offer free Token as part of promotional campaigns or
+          loyalty programs. The availability and conditions for obtaining free
+          Token will be communicated separately and are subject to the Company's
+          discretion.
+        </p>
+        <p>
+          All Token transactions are final and non-refundable unless otherwise
+          stated by the Company. Once Token are purchased or earned, they cannot
+          be exchanged for real currency or transferred to another user's
+          account.
+        </p>
+        <p>
+          The Company may offer promotions or bonuses related to Token from time
+          to time. Such promotions may have additional terms and conditions, and
+          the Company reserves the right to modify or cancel them at any time.
+        </p>
+        <p>
+          Token should only be used for legitimate purposes related to the
+          Platform. Any attempt to manipulate or abuse the Token system,
+          including but not limited to fraudulent activities or unauthorized
+          transfers, is strictly prohibited and may result in the suspension or
+          termination of Your account.
+        </p>
+        <p>
+          You acknowledge that Token have no cash value and can only be used
+          within the Platform as specified. They cannot be redeemed for cash or
+          transferred to other platforms or services.
+        </p>
+        <p>
+          The Company is not responsible for any unauthorized use, loss, or
+          theft of Token. You are solely responsible for maintaining the
+          security and confidentiality of Your account, including any login
+          credentials associated with it.
+        </p>
+        <p>
+          The Company reserves the right to modify, suspend, or terminate the
+          Token system or any part of it at any time and without prior notice.
+          This includes changes to Token prices, availability, and features
+          associated with Token.
+        </p>
+        <p>
+          The Company may also suspend or terminate Your account, restrict Your
+          access to Token, or take other appropriate actions if it believes that
+          You have violated these Terms or engaged in any unauthorized or
+          fraudulent activities related to the Token system.
         </p>
       </div>
     ),
