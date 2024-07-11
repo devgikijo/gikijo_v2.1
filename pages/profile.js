@@ -108,6 +108,11 @@ const main = () => {
   const profileCondition = () => {
     const { uid, type } = router.query;
 
+    if (uid && type) {
+      setProfileLoaded(true);
+      othersProfile();
+    }
+
     if (
       !apiData.user.isLoading &&
       !apiData.profile.isLoading &&
@@ -116,12 +121,7 @@ const main = () => {
       !profileLoaded
     ) {
       setProfileLoaded(true);
-
-      if (uid && type) {
-        othersProfile();
-      } else {
-        myProfile();
-      }
+      myProfile();
     }
   };
 
