@@ -43,10 +43,11 @@ const main = () => {
       <section class="container">
         <Breadcrumb page={PAGES.viewJob} />
         <JobFilter showTitle={false} navigateToJobs={true} />
-        <div class="card vh-100">
+        <div class="card">
           <JobDetails
             item={mainData.jobDetails.data}
             showBtnExternalPage={false}
+            isScrollable={false}
           />
         </div>
       </section>

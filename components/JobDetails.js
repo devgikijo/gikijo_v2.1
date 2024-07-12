@@ -20,7 +20,12 @@ import Link from 'next/link';
 import { useTempData } from '../context/tempData';
 import Image from 'next/image';
 
-function JobDetails({ isLoading, showBtnExternalPage = true, item = null }) {
+function JobDetails({
+  isLoading,
+  showBtnExternalPage = true,
+  item = null,
+  isScrollable = true,
+}) {
   const { toggleModal } = useModal();
   const { tempData, setValueTempData } = useTempData();
   const { apiData, updateJobPostViewsApi } = useApiCall();
@@ -225,7 +230,7 @@ function JobDetails({ isLoading, showBtnExternalPage = true, item = null }) {
                     </GlobalButton>
                   </div>
                 </div>
-                <div class="scroll-box">
+                <div class={`${isScrollable ? 'scroll-box' : ''}`}>
                   <ul class="list-unstyled bg-light rounded-2 p-2 mt-2">
                     <li class="mb-3">
                       <label class="small text-muted">Salary</label>
