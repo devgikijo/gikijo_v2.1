@@ -214,7 +214,7 @@ const SendHistoryModal = () => {
                                     <small>
                                       <small class="text-danger">
                                         <i class="bi bi-exclamation-circle"></i>{' '}
-                                        Link doest not exist,
+                                        Link does not exist,
                                       </small>{' '}
                                       <small
                                         class="text-primary clickable"
