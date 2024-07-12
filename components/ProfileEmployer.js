@@ -24,6 +24,7 @@ import CompanyProfileModal from './CompanyProfileModal';
 import { useRouter } from 'next/router';
 import { getDisplayValue } from '../utils/helper';
 import Joyride from 'react-joyride';
+import JobListCompany from './JobListCompany';
 
 function ProfileEmployer({ isLoading, isEmpty, item, onSuccessFunction }) {
   const { isModalOpen, toggleModal } = useModal();
@@ -352,7 +353,9 @@ function ProfileEmployer({ isLoading, isEmpty, item, onSuccessFunction }) {
                               aria-labelledby="nav-jobs-tab"
                             >
                               <div>
-                                <JobList />
+                                <JobListCompany
+                                  jobListData={companyJobsConfig?.jobs}
+                                />
                                 <Offcanvas
                                   show={isModalOpen.jobDetails}
                                   onHide={() => {

@@ -108,20 +108,20 @@ const main = () => {
   const profileCondition = () => {
     const { uid, type } = router.query;
 
-    if (uid && type) {
+    if (uid && type && !profileLoaded) {
       setProfileLoaded(true);
       othersProfile();
-    }
-
-    if (
-      !apiData.user.isLoading &&
-      !apiData.profile.isLoading &&
-      !apiData.resume.isLoading &&
-      !apiData.companyProfile.isLoading &&
-      !profileLoaded
-    ) {
-      setProfileLoaded(true);
-      myProfile();
+    } else {
+      if (
+        !apiData.user.isLoading &&
+        !apiData.profile.isLoading &&
+        !apiData.resume.isLoading &&
+        !apiData.companyProfile.isLoading &&
+        !profileLoaded
+      ) {
+        setProfileLoaded(true);
+        myProfile();
+      }
     }
   };
 
