@@ -19,6 +19,7 @@ import CompanyProfileModal from '../components/CompanyProfileModal';
 import SendHistoryModal from '../components/SendHistoryModal';
 import NewsModal from '../components/NewsModal';
 import OrderStatusModal from '../components/OrderStatusModal';
+import GoogleAnalytics from '../components/GoogleAnalytics';
 
 export default function MyApp({ Component, pageProps }) {
   useEffect(() => {
@@ -29,6 +30,7 @@ export default function MyApp({ Component, pageProps }) {
 
   return (
     <ApiCallProvider>
+      <GoogleAnalytics />
       <TempDataProvider>
         <ModalProvider>
           <NavBar />
