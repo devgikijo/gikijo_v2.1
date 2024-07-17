@@ -1,4 +1,3 @@
-import Head from 'next/head';
 import Script from 'next/script';
 import moment from 'moment';
 import { COUNTRIES, EMPLOYMENT_TYPES, SALARY_TYPES } from '../utils/constants';
@@ -73,45 +72,43 @@ const GoogleForJobsStructure = ({ job }) => {
     <>
       {checkIfJobValid() ? (
         <>
-          <Head>
-            <Script
-              type="application/ld+json"
-              dangerouslySetInnerHTML={{
-                __html: JSON.stringify({
-                  '@context': 'https://schema.org/',
-                  '@type': 'JobPosting',
-                  title: jobData.title,
-                  description: jobData.description,
-                  datePosted: jobData.datePosted,
-                  validThrough: jobData.validThrough,
-                  employmentType: jobData.employmentType,
-                  hiringOrganization: {
-                    '@type': 'Organization',
-                    name: jobData.company.name,
-                    sameAs: jobData.company.website,
+          <Script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                '@context': 'https://schema.org/',
+                '@type': 'JobPosting',
+                title: jobData.title,
+                description: jobData.description,
+                datePosted: jobData.datePosted,
+                validThrough: jobData.validThrough,
+                employmentType: jobData.employmentType,
+                hiringOrganization: {
+                  '@type': 'Organization',
+                  name: jobData.company.name,
+                  sameAs: jobData.company.website,
+                },
+                jobLocation: {
+                  '@type': 'Place',
+                  address: {
+                    '@type': 'PostalAddress',
+                    addressRegion: jobData.location.region,
+                    addressCountry: jobData.location.country,
                   },
-                  jobLocation: {
-                    '@type': 'Place',
-                    address: {
-                      '@type': 'PostalAddress',
-                      addressRegion: jobData.location.region,
-                      addressCountry: jobData.location.country,
-                    },
+                },
+                baseSalary: {
+                  '@type': 'MonetaryAmount',
+                  currency: jobData.salary.currency,
+                  value: {
+                    '@type': 'QuantitativeValue',
+                    minValue: jobData.salary.minValue,
+                    maxValue: jobData.salary.maxValue,
+                    unitText: jobData.salary.unitText,
                   },
-                  baseSalary: {
-                    '@type': 'MonetaryAmount',
-                    currency: jobData.salary.currency,
-                    value: {
-                      '@type': 'QuantitativeValue',
-                      minValue: jobData.salary.minValue,
-                      maxValue: jobData.salary.maxValue,
-                      unitText: jobData.salary.unitText,
-                    },
-                  },
-                }),
-              }}
-            />
-          </Head>
+                },
+              }),
+            }}
+          />
         </>
       ) : (
         ''
