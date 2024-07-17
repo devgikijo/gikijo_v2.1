@@ -155,22 +155,22 @@ export const IMAGES = {
 };
 
 export const SALARY_TYPES = [
-  { name: 'monthly', value: 'monthly' },
-  { name: 'weekly', value: 'weekly' },
-  { name: 'hourly', value: 'hourly' },
-  { name: 'daily', value: 'daily' },
-  { name: 'annually', value: 'annually' },
+  { name: 'monthly', value: 'monthly', googleForJob: 'MONTH' },
+  { name: 'weekly', value: 'weekly', googleForJob: 'WEEK' },
+  { name: 'hourly', value: 'hourly', googleForJob: 'HOUR' },
+  { name: 'daily', value: 'daily', googleForJob: 'DAY' },
+  { name: 'annually', value: 'annually', googleForJob: 'YEAR' },
 ];
 
 export const EMPLOYMENT_TYPES = [
-  { name: 'Full-time', value: 'full_time' },
-  { name: 'Part-time', value: 'part_time' },
-  { name: 'Contract', value: 'contract' },
-  { name: 'Freelance', value: 'freelance' },
-  { name: 'Internship', value: 'internship' },
-  { name: 'Entry-level', value: 'entry_level' },
-  { name: 'Volunteer', value: 'volunteer' },
-  { name: 'Others', value: 'others' },
+  { name: 'Full-time', value: 'full_time', googleForJob: 'FULL_TIME' },
+  { name: 'Part-time', value: 'part_time', googleForJob: 'PART_TIME' },
+  { name: 'Contract', value: 'contract', googleForJob: 'CONTRACTOR' },
+  { name: 'Freelance', value: 'freelance', googleForJob: 'CONTRACTOR' },
+  { name: 'Internship', value: 'internship', googleForJob: 'INTERN' },
+  { name: 'Entry-level', value: 'entry_level', googleForJob: 'OTHER' },
+  { name: 'Volunteer', value: 'volunteer', googleForJob: 'VOLUNTEER' },
+  { name: 'Others', value: 'others', googleForJob: 'OTHER' },
 ];
 
 export const INDUSTRIES = [
@@ -243,7 +243,9 @@ export const GENDERS = [
   { name: 'Female', value: 'female' },
 ];
 
-export const COUNTRIES = [{ name: 'Malaysia', value: 'malaysia' }];
+export const COUNTRIES = [
+  { name: 'Malaysia', value: 'malaysia', googleForJob: 'Malaysia' },
+];
 
 export const CURRENT_JOB_STATUS = [
   {

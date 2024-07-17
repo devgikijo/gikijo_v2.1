@@ -19,6 +19,7 @@ import { useModal } from '../context/modal';
 import Link from 'next/link';
 import { useTempData } from '../context/tempData';
 import Image from 'next/image';
+import GoogleForJobsStructure from './GoogleForJobsStructure';
 
 function JobDetails({
   isLoading,
@@ -40,6 +41,7 @@ function JobDetails({
   const selectedJob = item ? item : tempData.selectedItem.jobDetails;
 
   const jobData = {
+    title: selectedJob?.title,
     isApplied: apiData.application.data.some(
       (job) => job.job_post_id === selectedJob?.id
     ),
@@ -49,6 +51,7 @@ function JobDetails({
     createdAt: moment(selectedJob?.created_at).fromNow(),
     company: selectedJob?.company_profile?.company_name || '-',
     companyUid: selectedJob?.company_profile?.uid,
+    companyWebsite: selectedJob?.company_profile?.website || '-',
     salary: selectedJob?.min_salary
       ? `RM ${selectedJob?.min_salary} -  ${selectedJob?.max_salary} ${
           SALARY_TYPES.find((type) => type.value === selectedJob?.salary_type)
@@ -114,6 +117,7 @@ function JobDetails({
 
   return (
     <>
+      <GoogleForJobsStructure job={selectedJob} />
       <ShareJobModal />
       <div>
         {isLoading && <LoadingSpinner />}
