@@ -6,15 +6,27 @@ const GoogleForJobsStructure = ({ job }) => {
   const jobData = {
     title: job?.title,
     description: `
-Benefits:
-${job?.benefits.map((ben) => `• ${ben}`).join('\n')}
-
-Requirements:
-${job?.requirements.map((req) => `• ${req}`).join('\n')}
-
-Additional Info:
-${job?.additional_info ? job.additional_info : '-'}
-    `,
+    <div>
+      <label>Benefits</label>
+      <ul>
+        ${job?.benefits
+          .map((ben, index) => `<li key=${index}>${ben}</li>`)
+          .join('')}
+      </ul>
+      <label>Requirements</label>
+      <ul>
+        ${job?.requirements
+          .map((req, index) => `<li key=${index}>${req}</li>`)
+          .join('')}
+      </ul>
+      <label>Additional Info</label>
+      ${
+        job?.additional_info
+          ? `<ul><li><div>${job.additional_info}</div></li></ul>`
+          : '-'
+      }
+    </div>
+  `,
     datePosted: moment(job?.created_at).format('YYYY-MM-DD'),
     validThrough: moment(job?.created_at).add(1, 'months').format('YYYY-MM-DD'),
     employmentType: EMPLOYMENT_TYPES.find(
