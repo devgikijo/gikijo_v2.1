@@ -79,6 +79,7 @@ const NewsModal = () => {
         show={isModalOpen.news}
         onHide={() => {
           toggleModal('news');
+          setSeenNewsID_01(true);
         }}
       >
         <Modal.Header closeButton>
