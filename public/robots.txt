@@ -1,0 +1,15 @@
+User-agent: *
+Disallow: /applicants.html
+Disallow: /application.html
+Disallow: /changePassword.html
+Disallow: /channel.html
+Disallow: /companyProfile.html
+Disallow: /dashboard.html
+Disallow: /jobPost.html
+Disallow: /maintenance.html
+Disallow: /manageProfile.html
+Disallow: /onboard.html
+Disallow: /profile.html
+Disallow: /settings.html
+Disallow: /termsConditions.html
+
