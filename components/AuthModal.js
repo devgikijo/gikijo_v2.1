@@ -90,7 +90,7 @@ const AuthModal = ({ show, setShow }) => {
 
     if (data?.id) {
       toggleModal('auth');
-      router.push(PAGES.profile.directory);
+      router.push(PAGES.dashboard.directory);
     } else {
       setTimeout(() => {
         toast(
