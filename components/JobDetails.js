@@ -280,7 +280,9 @@ function JobDetails({
                     )}
                     <hr />
                     <li class="mb-3">
-                      <label class="small text-muted">Company</label>
+                      <label class="small text-muted">
+                        <i class="bi bi-building"></i> Company
+                      </label>
                       <div class="mb-0">
                         {jobData.company ? (
                           <Link
